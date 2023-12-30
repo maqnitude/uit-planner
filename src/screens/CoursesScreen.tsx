@@ -35,7 +35,7 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
         )}
         keyExtractor={item => item.code}
       />
-      <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AddCourse')}>
+      <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('Add Course', { setCourses })}>
         <Text style={styles.addButtonText}>+</Text>
       </TouchableOpacity>
     </View>
