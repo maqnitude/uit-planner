@@ -1,21 +1,25 @@
-import React, {useState} from 'react';
+import React, { useEffect, useState} from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
-
-interface Course {
-  name: string;
-  code: string;
-  credits: number;
-}
+import { Course } from '../types';
+import 'react-native-get-random-values';
+import { v4 as uuidv4 } from 'uuid';
+import { storeData, getData } from '../storage/Storage';
 
 interface CoursesScreenProps {
   navigation: any;
 }
 
 const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
-  const [courses, setCourses] = useState<Course[]>([
-    {name: 'Math 101', code: 'MATH101', credits: 3},
-    {name: 'English Literature', code: 'ENGL202', credits: 4},
-  ]);
+  const [courses, setCourses] = useState<Course[]>([]);
+
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  const fetchCourses = async () => {
+    const courses = await getData('course');
+    setCourses(courses);
+  };
 
   const handleItemPress = (item: Course) => {
     navigation.navigate('CourseDetails', {item});
