@@ -38,4 +38,15 @@ export const addInstance = async (key: string, instance: object) => {
     }
 };
 
-// add method to remove instance from the storage
+export const removeInstance = async (key: string, instanceId: string) => {
+    try {
+        let existingInstances = await getData(key);
+        if (!Array.isArray(existingInstances)) {
+            existingInstances = [];
+        }
+        const updatedInstances = existingInstances.filter((instance: any) => instance.id !== instanceId);
+        await storeData(key, updatedInstances);
+    } catch (error) {
+        console.error(error);
+    }
+};
