@@ -25,7 +25,7 @@ export default function App() {
           headerTitleAlign: 'center',
         }}>
         <Stack.Screen
-          name='Bottom Tabs'
+          name="Bottom Tabs"
           component={BottomTabs}
           options={{ headerShown: false }}
         />

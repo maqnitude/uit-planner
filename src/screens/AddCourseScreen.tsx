@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { View, Alert } from 'react-native';
 import FormTemplate from '../components/FormTemplate';
-import { Course } from '../types';
+import { ClassPeriod, Course } from '../types';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import { addInstance } from '../storage/Storage';
 
-const AddCourseScreen = ({ route }) => {
+const AddCourseScreen = ({ route, navigation }) => {
   const { setCourses } = route.params;
   const [name, setName] = useState('');
   const [code, setCode] = useState('');
   const [credits, setCredits] = useState('');
   const [location, setLocation] = useState('');
+  const [day, setDay] = useState('Monday');
+  const [startTime, setStartTime] = useState(new Date());
+  const [endTime, setEndTime] = useState(new Date());
 
   const fields = [
     {
@@ -37,6 +40,26 @@ const AddCourseScreen = ({ route }) => {
       placeholder: 'Enter course location',
       value: location,
       onChangeText: setLocation,
+    },
+    {
+      label: 'Day',
+      placeholder: 'Select day',
+      value: day,
+      isPicker: true,
+      pickerItems: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+      onChangeText: setDay,
+    },
+    {
+      label: 'Start Time',
+      value: startTime,
+      isDatePicker: true,
+      onDateChange: setStartTime,
+    },
+    {
+      label: 'End Time',
+      value: endTime,
+      isDatePicker: true,
+      onDateChange: setEndTime,
     },
   ];
 
@@ -69,12 +92,18 @@ const AddCourseScreen = ({ route }) => {
       return;
     }
 
+    if (startTime >= endTime) {
+      Alert.alert('Invalid input', 'Start time must be earlier than end time.');
+      return;
+    }
+
     const newCourse: Course = {
       id: uuidv4(),
       name,
       code,
       credits: parseInt(credits, 10),
       location,
+      schedule: [{ day, startTime, endTime } as ClassPeriod],
     };
 
     await addInstance('course', newCourse);
@@ -82,6 +111,14 @@ const AddCourseScreen = ({ route }) => {
     setCourses((prevCourses: Course[]) => [...prevCourses, newCourse]);
 
     resetState();
+
+    Alert .alert(
+      'Success',
+      'Course was added successfully',
+      [
+        {text: 'OK', onPress: () => navigation.goBack()},
+      ]
+    );
   };
 
   return (

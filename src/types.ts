@@ -5,13 +5,13 @@ export interface Course {
     credits: number;
     location: string;
     // semesterId: string;
-    // schedule: ClassPeriod[];
+    schedule: ClassPeriod[];
 }
 
 export interface ClassPeriod {
     day: string;
-    startTime: string;
-    endTime: string;
+    startTime: Date;
+    endTime: Date;
 }
 
 export interface Semester {
