@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { View, Alert } from 'react-native';
-import FormTemplate from '../components/FormTemplate';
-import { ClassPeriod, Course } from '../types';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
+
+import { ClassPeriod, Course } from '../types';
+import FormTemplate from '../components/FormTemplate';
 import { addInstance } from '../storage/Storage';
+import { storeCourse } from '../storage/CoursesStorage';
 
 const AddCourseScreen = ({ route, navigation }) => {
   const { setCourses } = route.params;
@@ -106,7 +108,8 @@ const AddCourseScreen = ({ route, navigation }) => {
       schedule: [{ day, startTime, endTime } as ClassPeriod],
     };
 
-    await addInstance('course', newCourse);
+    // await addInstance('course', newCourse);
+    await storeCourse(newCourse);
 
     setCourses((prevCourses: Course[]) => [...prevCourses, newCourse]);
 
