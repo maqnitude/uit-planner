@@ -1,30 +1,30 @@
 export interface Course {
-    id: string;
-    name: string;
-    code: string;
-    credits: number;
-    location: string;
-    // semesterId: string;
-    schedule: ClassPeriod[];
+  id: string;
+  name: string;
+  code: string;
+  credits: number;
+  location: string;
+  // semesterId: string;
+  schedule: ClassPeriod[];
 }
 
 export interface ClassPeriod {
-    day: string;
-    startTime: Date;
-    endTime: Date;
+  day: string;
+  startTime: Date;
+  endTime: Date;
 }
 
 export interface Semester {
-    id: string;
-    start: Date;
-    end: Date;
+  id: string;
+  start: Date;
+  end: Date;
 }
 
 export interface Task {
-    id: string;
-    name: string;
-    type: string;
-    dueDate: Date;
-    courseId: string;
-    completed: boolean;
+  id: string;
+  name: string;
+  type: string;
+  dueDate: Date;
+  courseId: string;
+  completed: boolean;
 }

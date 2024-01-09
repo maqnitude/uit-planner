@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { Course } from '../types';
 import 'react-native-get-random-values';
@@ -22,7 +22,7 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
   };
 
   const handleItemPress = (item: Course) => {
-    navigation.navigate('CourseDetails', {item});
+    navigation.navigate('CourseDetails', { item });
   };
 
   const handleDeletePress = async (item: Course) => {
@@ -50,7 +50,7 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
       <FlatList
         contentContainerStyle={{ paddingBottom: 70 }}
         data={courses}
-        renderItem={({item}) => (
+        renderItem={({ item }) => (
           <View style={styles.itemBlock}>
             <TouchableOpacity onPress={() => handleItemPress(item)}>
               <View>
@@ -59,7 +59,7 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
               </View>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => handleDeletePress(item)}>
-                <Icon name="delete" size={25} />
+              <Icon name="delete" size={25} />
             </TouchableOpacity>
           </View>
         )}

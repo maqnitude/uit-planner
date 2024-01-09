@@ -112,11 +112,11 @@ const AddCourseScreen = ({ route, navigation }) => {
 
     resetState();
 
-    Alert .alert(
+    Alert.alert(
       'Success',
       'Course was added successfully',
       [
-        {text: 'OK', onPress: () => navigation.goBack()},
+        { text: 'OK', onPress: () => navigation.goBack() },
       ]
     );
   };
