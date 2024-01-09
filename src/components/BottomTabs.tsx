@@ -1,23 +1,41 @@
 import React from 'react';
 import { ComponentType } from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator, BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import CoursesScreen from '../screens/CoursesScreen';
 import TimeTable from '../screens/TimetableScreen';
 
 const Tab = createBottomTabNavigator();
 
-interface TabScreen {
+interface TabScreenProps {
   name: string,
   component: ComponentType<any>;
+  options: BottomTabNavigationOptions;
 }
 
-function BottomTabs() {
-  const screens: TabScreen[] = [
-    { name: 'Courses', component: CoursesScreen },
-    { name: 'Timetable', component: TimeTable },
-  ];
+const screens: TabScreenProps[] = [
+  {
+    name: 'Courses',
+    component: CoursesScreen,
+    options: {
+      tabBarIcon: ({ color, size }) => (
+        <Icon name="google-classroom" color={color} size={size} />
+      ),
+    },
+  },
+  {
+    name: 'Timetable',
+    component: TimeTable,
+    options: {
+      tabBarIcon: ({ color, size }) => (
+        <Icon name="timetable" color={color} size={size} />
+      ),
+    },
+  },
+];
 
+function BottomTabs() {
   return (
     <Tab.Navigator
       screenOptions={{
@@ -31,7 +49,12 @@ function BottomTabs() {
         headerTitleAlign: 'center',
       }}>
       {screens.map((screen) => (
-        <Tab.Screen key={screen.name} name={screen.name} component={screen.component} />
+        <Tab.Screen
+          key={screen.name}
+          name={screen.name}
+          component={screen.component}
+          options={screen.options}
+        />
       ))}
     </Tab.Navigator>
   );
