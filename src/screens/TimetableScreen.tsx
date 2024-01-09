@@ -69,7 +69,7 @@ const TimeTable = () => {
         <View style={{ flexDirection: 'row' }}>
           <View style={{ marginBottom: blockHeight, marginTop: headerHeight }}>
             {times.map((time, index) => (
-              <View key={index} style={{ width: timeStampWidth, height: blockHeight, justifyContent: 'flex-start', borderBottomWidth: 0.5, borderTopWidth: index===0 ? 0.5 : 0 }}>
+              <View key={index} style={{ width: timeStampWidth, height: blockHeight, justifyContent: 'flex-start', borderBottomWidth: 0.5, borderTopWidth: index === 0 ? 0.5 : 0 }}>
                 <Text style={{ fontWeight: 'bold' }}>{time}</Text>
               </View>
             ))}

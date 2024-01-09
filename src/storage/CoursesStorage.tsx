@@ -1,6 +1,6 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { Course } from "../types";
+import { Course } from '../types';
 
 const COURSES_KEY = 'courses';
 
@@ -21,16 +21,16 @@ export const storeCourse = async (course: Course) => {
     cachedCourses?.push(course);
     await AsyncStorage.setItem(COURSES_KEY, JSON.stringify(cachedCourses));
   } catch (error) {
-    console.error("Error storing course:", error);
+    console.error('Error storing course:', error);
     throw error; // Rethrow to signal error to caller
-  } 
+  }
 };
 
 export const getAllCourses = async (): Promise<Course[] | undefined> => {
   try {
     return await getCoursesFromStorage();
   } catch (error) {
-    console.error("Error fetching courses:", error);
+    console.error('Error fetching courses:', error);
     throw error;
   }
 };
@@ -40,10 +40,10 @@ export const getCourse = async (id: string): Promise<Course | undefined> => {
     const courses = await getCoursesFromStorage();
     return courses?.find(course => course.id === id);
   } catch (error) {
-    console.error("Error fetching course:", error);
+    console.error('Error fetching course:', error);
     throw error;
   }
-}
+};
 
 export const removeCourse = async (id: string) => {
   try {
@@ -51,7 +51,18 @@ export const removeCourse = async (id: string) => {
     cachedCourses = cachedCourses?.filter(course => course.id !== id);
     await AsyncStorage.setItem(COURSES_KEY, JSON.stringify(cachedCourses));
   } catch (error) {
-    console.error("Error removing course:", error);
+    console.error('Error removing course:', error);
     throw error;
   }
-}
+};
+
+export const updateCourse = async (updatedCourse: Course) => {
+  try {
+    cachedCourses = await getCoursesFromStorage();
+    cachedCourses = cachedCourses?.map(course => course.id === updatedCourse.id ? updatedCourse : course);
+    await AsyncStorage.setItem(COURSES_KEY, JSON.stringify(cachedCourses));
+  } catch (error) {
+    console.error('Error updating course:', error);
+    throw error;
+  }
+};

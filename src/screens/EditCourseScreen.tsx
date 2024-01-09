@@ -1,22 +1,20 @@
 import React, { useState } from 'react';
 import { View, Alert } from 'react-native';
 import 'react-native-get-random-values';
-import { v4 as uuidv4 } from 'uuid';
 
 import { ClassPeriod, Course } from '../types';
+import { updateCourse } from '../storage/CoursesStorage';
 import FormTemplate from '../components/FormTemplate';
-import { addInstance } from '../storage/Storage';
-import { storeCourse } from '../storage/CoursesStorage';
 
-const AddCourseScreen = ({ route, navigation }) => {
-  const { setCourses } = route.params;
-  const [name, setName] = useState('');
-  const [code, setCode] = useState('');
-  const [credits, setCredits] = useState('');
-  const [location, setLocation] = useState('');
-  const [day, setDay] = useState('Monday');
-  const [startTime, setStartTime] = useState(new Date());
-  const [endTime, setEndTime] = useState(new Date());
+const EditCourseScreen = ({ route, navigation }) => {
+  const { course, setCourses } = route.params;
+  const [name, setName] = useState(course.name);
+  const [code, setCode] = useState(course.code);
+  const [credits, setCredits] = useState(course.credits.toString());
+  const [location, setLocation] = useState(course.location);
+  const [day, setDay] = useState(course.schedule[0].day);
+  const [startTime, setStartTime] = useState(new Date(course.schedule[0].startTime));
+  const [endTime, setEndTime] = useState(new Date(course.schedule[0].endTime));
 
   const fields = [
     {
@@ -99,8 +97,8 @@ const AddCourseScreen = ({ route, navigation }) => {
       return;
     }
 
-    const newCourse: Course = {
-      id: uuidv4(),
+    const updatedCourse: Course = {
+      ...course,
       name,
       code,
       credits: parseInt(credits, 10),
@@ -108,16 +106,15 @@ const AddCourseScreen = ({ route, navigation }) => {
       schedule: [{ day, startTime, endTime } as ClassPeriod],
     };
 
-    // await addInstance('course', newCourse);
-    await storeCourse(newCourse);
+    await updateCourse(updatedCourse);
 
-    setCourses((prevCourses: Course[]) => [...prevCourses, newCourse]);
+    setCourses((prevCourses: Course[]) => prevCourses.map((c: Course) => c.id === course.id ? updatedCourse : c));
 
     resetState();
 
     Alert.alert(
       'Success',
-      'Course was added successfully',
+      'Course was updated successfully',
       [
         { text: 'OK', onPress: () => navigation.goBack() },
       ]
@@ -131,4 +128,4 @@ const AddCourseScreen = ({ route, navigation }) => {
   );
 };
 
-export default AddCourseScreen;
+export default EditCourseScreen;

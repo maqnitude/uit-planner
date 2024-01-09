@@ -27,15 +27,15 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
     try {
       const fetchedCourses = await getAllCourses();
       setCourses(fetchedCourses ?? []);
-    } catch (error) {
-      setError((error as Error).message);
+    } catch (err) {
+      setError((err as Error).message);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleItemPress = (item: Course) => {
-    navigation.navigate('CourseDetails', {item});
+    navigation.navigate('Course Details', { item, setCourses });
   };
 
   const handleDeletePress = async (item: Course) => {

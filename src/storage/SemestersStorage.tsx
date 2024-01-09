@@ -1,6 +1,6 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { Course, Semester } from "../types";
+import { Course, Semester } from '../types';
 
 const SEMESTERS_KEY = 'semesters';
 
@@ -21,7 +21,7 @@ export const storeSemester = async (semester: Semester) => {
     cachedSemesters?.push(semester);
     await AsyncStorage.setItem(SEMESTERS_KEY, JSON.stringify(cachedSemesters));
   } catch (error) {
-    console.error("Error storing semester:", error);
+    console.error('Error storing semester:', error);
     throw error;
   }
 };
@@ -30,20 +30,20 @@ export const getAllSemesters = async (): Promise<Semester[] | undefined> => {
   try {
     return await getSemestersFromStorage();
   } catch (error) {
-    console.error("Error fetching semesters:", error);
+    console.error('Error fetching semesters:', error);
     throw error;
   }
-}
+};
 
 export const getSemester = async (id: string): Promise<Semester | undefined> => {
   try {
     const semesters = await getSemestersFromStorage();
     return semesters?.find(semester => semester.id === id);
   } catch (error) {
-    console.error("Error fetching semester:", error);
+    console.error('Error fetching semester:', error);
     throw error;
   }
-}
+};
 
 export const removeSemester = async (id: string) => {
   try {
@@ -51,7 +51,7 @@ export const removeSemester = async (id: string) => {
     cachedSemesters = cachedSemesters?.filter(semester => semester.id !== id);
     await AsyncStorage.setItem(SEMESTERS_KEY, JSON.stringify(cachedSemesters));
   } catch (error) {
-    console.error("Error removing semester:", error);
+    console.error('Error removing semester:', error);
     throw error;
   }
-}
+};
