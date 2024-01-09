@@ -1,9 +1,10 @@
-import React, { useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { Course } from '../types';
 import 'react-native-get-random-values';
-import { getData, removeInstance } from '../storage/Storage';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import { Course } from '../types';
+import { getAllCourses, removeCourse } from '../storage/CoursesStorage';
 
 interface CoursesScreenProps {
   navigation: any;
@@ -12,13 +13,25 @@ interface CoursesScreenProps {
 const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
   const [courses, setCourses] = useState<Course[]>([]);
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     fetchCourses();
   }, []);
 
   const fetchCourses = async () => {
-    const fetchedCourses = await getData('course');
-    setCourses(fetchedCourses);
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const fetchedCourses = await getAllCourses();
+      setCourses(fetchedCourses ?? []);
+    } catch (error) {
+      setError((error as Error).message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleItemPress = (item: Course) => {
@@ -37,7 +50,7 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
         {
           text: 'OK',
           onPress: async () => {
-            await removeInstance('course', item.id);
+            await removeCourse(item.id);
             fetchCourses();
           },
         },
@@ -47,24 +60,30 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <FlatList
-        contentContainerStyle={{ paddingBottom: 70 }}
-        data={courses}
-        renderItem={({item}) => (
-          <View style={styles.itemBlock}>
-            <TouchableOpacity onPress={() => handleItemPress(item)}>
-              <View>
-                <Text style={styles.itemTitle}>{item.name}</Text>
-                <Text style={styles.itemCode}>{item.code}</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleDeletePress(item)}>
-                <Icon name="delete" size={25} />
-            </TouchableOpacity>
-          </View>
-        )}
-        keyExtractor={item => item.code}
-      />
+      {isLoading && <Text>Loading courses...</Text>}
+      {error && <Text style={{ color: 'red' }}>Error loading courses: {error}</Text>}
+
+      {!isLoading && !error && (
+        <FlatList
+          contentContainerStyle={{ paddingBottom: 70 }}
+          data={courses}
+          renderItem={({item}) => (
+            <View style={styles.itemBlock}>
+              <TouchableOpacity onPress={() => handleItemPress(item)}>
+                <View>
+                  <Text style={styles.itemTitle}>{item.name}</Text>
+                  <Text style={styles.itemCode}>{item.code}</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => handleDeletePress(item)}>
+                  <Icon name="delete" size={25} />
+              </TouchableOpacity>
+            </View>
+          )}
+          keyExtractor={item => item.code}
+        />
+      )}
+
       <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('Add Course', { setCourses })}>
         <Text style={styles.addButtonText}>+</Text>
       </TouchableOpacity>
