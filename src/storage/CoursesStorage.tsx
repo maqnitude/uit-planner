@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { Course } from "../types";
 
-const COURSES_KEY = 'courses'
+const COURSES_KEY = 'courses';
 
 let cachedCourses: Course[] | undefined;
 
