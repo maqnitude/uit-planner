@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Button } from 'react-native';
 
 import { Course } from '../types';
 
@@ -17,9 +17,7 @@ const CourseDetailsScreen: React.FC<CourseDetailsScreenProps> = ({ navigation, r
       <Text style={styles.detail}>Code: {course.code}</Text>
       <Text style={styles.detail}>Credits: {course.credits}</Text>
       <Text style={styles.detail}>Location: {course.location}</Text>
-      <TouchableOpacity onPress={() => navigation.navigate('Edit Course', { course, setCourses })}>
-        <Text>Edit</Text>
-      </TouchableOpacity>
+      <Button title="Edit" onPress={() => navigation.navigate('Edit Course', { course, setCourses })} />
     </View>
   );
 };
