@@ -59,13 +59,13 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.container}>
       {isLoading && <Text>Loading courses...</Text>}
-      {error && <Text style={{ color: 'red' }}>Error loading courses: {error}</Text>}
+      {error && <Text style={styles.errorText}>Error loading courses: {error}</Text>}
 
       {!isLoading && !error && (
         <FlatList
-          contentContainerStyle={{ paddingBottom: 70 }}
+          contentContainerStyle={styles.listContent}
           data={courses}
           renderItem={({item}) => (
             <View style={styles.itemBlock}>
@@ -92,6 +92,15 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  errorText: {
+    color: 'red',
+  },
+  listContent: {
+    paddingBottom: 70,
+  },
   itemBlock: {
     flexDirection: 'row',
     justifyContent: 'space-between',
