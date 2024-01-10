@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
-import { Course } from '../types';
+import { getCourse } from '../storage/CoursesStorage';
 
 interface CourseDetailsScreenProps {
   navigation: any;
@@ -10,14 +11,25 @@ interface CourseDetailsScreenProps {
 
 const CourseDetailsScreen: React.FC<CourseDetailsScreenProps> = ({ navigation, route }) => {
   const { item: course, setCourses } = route.params;
+  const [courseDetails, setCourseDetails] = useState(course);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchUpdatedCourse = async () => {
+        const updatedCourse = await getCourse(course.id);
+        setCourseDetails(updatedCourse);
+      };
+      fetchUpdatedCourse();
+    }, [course.id])
+  );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{course.name}</Text>
-      <Text style={styles.detail}>Code: {course.code}</Text>
-      <Text style={styles.detail}>Credits: {course.credits}</Text>
-      <Text style={styles.detail}>Location: {course.location}</Text>
-      <Button title="Edit" onPress={() => navigation.navigate('Edit Course', { course, setCourses })} />
+      <Text style={styles.title}>{courseDetails.name}</Text>
+      <Text style={styles.detail}>Code: {courseDetails.code}</Text>
+      <Text style={styles.detail}>Credits: {courseDetails.credits}</Text>
+      <Text style={styles.detail}>Location: {courseDetails.location}</Text>
+      <Button title="Edit" onPress={() => navigation.navigate('Edit Course', { course: courseDetails, setCourses })} />
     </View>
   );
 };
