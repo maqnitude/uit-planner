@@ -25,7 +25,9 @@ const TimeTable = () => {
   useFocusEffect(
     React.useCallback(() => {
       const fetchCourses = async () => {
+        console.log('Fetching courses...');
         const fetchedCourses = await getAllCourses();
+        console.log('Fetched courses: ', fetchedCourses);
         setCourses(fetchedCourses ?? []);
       };
       fetchCourses();
