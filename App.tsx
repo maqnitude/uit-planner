@@ -7,6 +7,7 @@ import AddCourseScreen from './src/screens/AddCourseScreen';
 import EditCourseScreen from './src/screens/EditCourseScreen';
 import CourseDetailsScreen from './src/screens/CourseDetailsScreen';
 import TimeTable from './src/screens/TimetableScreen';
+import DevMenuScreen from './src/screens/DevMenuScreen'
 
 import BottomTabs from './src/components/BottomTabs';
 
@@ -36,6 +37,9 @@ export default function App() {
         <Stack.Screen name="Course Details" component={CourseDetailsScreen} />
         <Stack.Screen name="Edit Course" component={EditCourseScreen} />
         <Stack.Screen name="Timetable" component={TimeTable} />
+        {__DEV__ && (
+          <Stack.Screen name="Dev Menu" component={DevMenuScreen} />
+        )}
         {/* Other screens */}
       </Stack.Navigator>
       </NavigationContainer>
