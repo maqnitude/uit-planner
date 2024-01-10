@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Alert } from 'react-native';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
+import moment from 'moment';
 
 import { ClassPeriod, Course } from '../types';
 import FormTemplate from '../components/FormTemplate';
@@ -96,6 +97,21 @@ const AddCourseScreen = ({ route, navigation }) => {
 
     if (startTime >= endTime) {
       Alert.alert('Invalid input', 'Start time must be earlier than end time.');
+      return;
+    }
+
+    const minTime = moment('7:30', 'HH:mm');
+    const maxTime = moment('17:45', 'HH:mm');
+    const startTimeMoment = moment(startTime);
+    const endTimeMoment = moment(endTime);
+
+    if (startTimeMoment.format('HH:mm') < minTime.format('HH:mm') || startTimeMoment.format('HH:mm') > maxTime.format('HH:mm')) {
+      Alert.alert('Invalid input', 'Start time must be between 7:30 and 17:45');
+      return;
+    }
+
+    if (endTimeMoment.format('HH:mm') < minTime.format('HH:mm') || endTimeMoment.format('HH:mm') > maxTime.format('HH:mm')) {
+      Alert.alert('Invalid input', 'End time must be between 7:30 and 17:45');
       return;
     }
 
