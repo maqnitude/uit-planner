@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import CoursesScreen from '../screens/CoursesScreen';
 import TimeTable from '../screens/TimetableScreen';
+import DevMenuScreen from '../screens/DevMenuScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -35,6 +36,14 @@ const screens: TabScreenProps[] = [
   },
 ];
 
+const devScreens: TabScreenProps[] = [
+  {
+    name: 'Dev Menu',
+    component: DevMenuScreen,
+    options: {},
+  },
+];
+
 function BottomTabs() {
   return (
     <Tab.Navigator
@@ -49,6 +58,14 @@ function BottomTabs() {
         headerTitleAlign: 'center',
       }}>
       {screens.map((screen) => (
+        <Tab.Screen
+          key={screen.name}
+          name={screen.name}
+          component={screen.component}
+          options={screen.options}
+        />
+      ))}
+      {__DEV__ && devScreens.map((screen) => (
         <Tab.Screen
           key={screen.name}
           name={screen.name}
