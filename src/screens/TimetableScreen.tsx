@@ -1,56 +1,59 @@
-import React, { useState, useEffect } from 'react';
-import { ScrollView, View, Text, Dimensions } from 'react-native';
+import React, { useState } from 'react';
+import { ScrollView, View, Text, Dimensions, StyleSheet } from 'react-native';
 import moment from 'moment';
+import { useFocusEffect } from '@react-navigation/native';
 
 import CourseBlock from '../components/CourseBlock';
 import { Course } from '../types';
 import { getAllCourses } from '../storage/CoursesStorage';
 
-const TimeTable = () => {
-  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const timeStamps = ['7:30', '8:15', '9:00', '9:45', '10:30', '11:15', '12:00', '12:45', '13:00', '13:45', '14:30', '15:15', '16:15', '17:00'];
-  const times = timeStamps.map(time => moment(time, 'HH:mm'));
-  const dayColors = {
-    'Monday': '#CBE4F9',
-    'Tuesday': '#CDF5F6',
-    'Wednesday': '#EFF9DA',
-    'Thursday': '#F9EBDF',
-    'Friday': '#F9D8D6',
-    'Saturday': '#D6CDEA',
-  };
+const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const TIME_STAMPS = ['7:30', '8:15', '9:00', '9:45', '10:30', '11:15', '12:00', '12:45', '13:00', '13:45', '14:30', '15:15', '16:15', '17:00'];
+const DAY_COLORS = {
+  'Monday': '#CBE4F9',
+  'Tuesday': '#CDF5F6',
+  'Wednesday': '#EFF9DA',
+  'Thursday': '#F9EBDF',
+  'Friday': '#F9D8D6',
+  'Saturday': '#D6CDEA',
+};
+const TIMES = TIME_STAMPS.map(time => moment(time, 'HH:mm'));
 
+const TimeTable = () => {
   const [courses, setCourses] = useState<Course[]>([]);
 
-  useEffect(() => {
-    const fetchCourses = async () => {
-      const fetchedCourses = await getAllCourses();
-      setCourses(fetchedCourses ?? []);
-    };
-    fetchCourses();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchCourses = async () => {
+        const fetchedCourses = await getAllCourses();
+        setCourses(fetchedCourses ?? []);
+      };
+      fetchCourses();
+    }, [])
+  );
 
   const screenWidth = Dimensions.get('window').width;
   const timeStampWidth = 50;
   const headerHeight = 30;
   const unitHeight = 90;
   return (
-    <View style={{ flex: 1, flexDirection: 'row' }}>
+    <View style={styles.container}>
       <ScrollView>
-        <View style={{ flexDirection: 'row' }}>
+        <View style={styles.row}>
           <View style={{ marginBottom: unitHeight, marginTop: headerHeight }}>
-            {timeStamps.map((time, index) => (
-              <View key={index} style={{ width: timeStampWidth, height: unitHeight, justifyContent: 'flex-start', alignItems: 'center', borderBottomWidth: 0.5, borderRightWidth: 0.5, borderTopWidth: index === 0 ? 0.5 : 0 }}>
-                <Text style={{ fontWeight: 'bold' }}>{time}</Text>
+            {TIME_STAMPS.map((time, index) => (
+              <View key={index} style={[styles.timeStamp, {width: timeStampWidth, height: unitHeight, borderTopWidth: index === 0 ? 0.5 : 0}]}>
+                <Text style={styles.boldText}>{time}</Text>
               </View>
             ))}
           </View>
           <ScrollView horizontal>
-            <View style={{ flexDirection: 'row' }}>
-              {days.map((day, dayIndex) => (
+            <View style={styles.row}>
+              {DAYS.map((day, dayIndex) => (
                 <View key={dayIndex} style={{ width: (screenWidth - timeStampWidth) / 3 }}>
-                  <Text style={{ fontWeight: 'bold', height: headerHeight, textAlign: 'center', backgroundColor: '#b5e2ff', borderLeftWidth: 0.5, borderBottomWidth: 0.5 }}>{day}</Text>
-                  {times.map((time, timeIndex) => {
-                    return <View key={timeIndex} style={{ height: unitHeight, borderRightWidth: 0.5, borderBottomWidth: 0.5 }}>
+                  <Text style={[styles.header, styles.boldText, {height: headerHeight}]}>{day}</Text>
+                  {TIMES.map((time, timeIndex) => {
+                    return <View key={timeIndex} style={[styles.timeSlot, {height: unitHeight}]}>
                       {courses.map((course, courseIndex) => {
                         const courseStartTime = moment(course.schedule[0].startTime).format('HH:mm');
                         const courseEndTime = moment(course.schedule[0].endTime).format('HH:mm');
@@ -60,10 +63,9 @@ const TimeTable = () => {
                           const blockHeight = courseDurationMinutes * unitHeight / 45;
                           const offsetMinutes = moment.duration(moment(courseStartTime, 'HH:mm').diff(moment(time, 'HH:mm'))).asMinutes();
                           const offset = offsetMinutes * unitHeight / 45;
-                          console.log(`minutes: ${courseDurationMinutes}`);
-                          console.log(blockHeight);
-                          return <CourseBlock key={courseIndex} course={course} color={dayColors[day]} height={blockHeight} offset={offset} />;
+                          return <CourseBlock key={courseIndex} course={course} color={DAY_COLORS[day]} height={blockHeight} offset={offset} />;
                         }
+                        return null;
                       })}
                     </View>;
                   })}
@@ -76,5 +78,35 @@ const TimeTable = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  timeStamp: {
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    borderBottomWidth: 0.5,
+    borderRightWidth: 0.5,
+  },
+  boldText: {
+    fontWeight: 'bold',
+  },
+  header: {
+    textAlign: 'center',
+    backgroundColor: '#b5e2ff',
+    borderLeftWidth: 0.5,
+    borderBottomWidth: 0.5,
+  },
+  timeSlot: {
+    borderRightWidth: 0.5,
+    borderBottomWidth: 0.5,
+  },
+});
+
 
 export default TimeTable;

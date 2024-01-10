@@ -9,6 +9,8 @@ import FormTemplate from '../components/FormTemplate';
 import { addInstance } from '../storage/Storage';
 import { storeCourse } from '../storage/CoursesStorage';
 
+const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
 const AddCourseScreen = ({ route, navigation }) => {
   const { setCourses } = route.params;
   const [name, setName] = useState('');
@@ -49,7 +51,7 @@ const AddCourseScreen = ({ route, navigation }) => {
       placeholder: 'Select day',
       value: day,
       isPicker: true,
-      pickerItems: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+      pickerItems: DAYS,
       onChangeText: setDay,
     },
     {
