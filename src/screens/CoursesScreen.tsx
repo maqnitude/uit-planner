@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import 'react-native-get-random-values';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -16,9 +17,11 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchCourses();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchCourses();
+    }, [])
+  );
 
   const fetchCourses = async () => {
     setIsLoading(true);
