@@ -17,7 +17,8 @@ async function getCoursesFromStorage(): Promise<Course[] | undefined> {
 
 export const storeCourse = async (course: Course) => {
   try {
-    cachedCourses = await getCoursesFromStorage(); // Get courses from storage or cache
+    // Get courses from storage or cache
+    cachedCourses = await getCoursesFromStorage(); 
     cachedCourses?.push(course);
     await AsyncStorage.setItem(COURSES_KEY, JSON.stringify(cachedCourses));
   } catch (error) {
@@ -25,6 +26,17 @@ export const storeCourse = async (course: Course) => {
     throw error; // Rethrow to signal error to caller
   }
 };
+
+export const storeCourses = async (courses: Course[]) => {
+  try {
+    cachedCourses = await getCoursesFromStorage();
+    cachedCourses?.push(...courses)
+    await AsyncStorage.setItem(COURSES_KEY, JSON.stringify(cachedCourses));
+  } catch (error) {
+    console.error('Error storing courses:', error);
+    throw error;
+  }
+}
 
 export const getAllCourses = async (): Promise<Course[] | undefined> => {
   try {
@@ -55,6 +67,16 @@ export const removeCourse = async (id: string) => {
     throw error;
   }
 };
+
+export const removeAllCourses = async () => {
+  try {
+    cachedCourses = [];
+    await AsyncStorage.removeItem(COURSES_KEY);
+  } catch (error) {
+    console.error('Error removing all courses:', error);
+    throw error;
+  }
+}
 
 export const updateCourse = async (updatedCourse: Course) => {
   try {
