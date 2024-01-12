@@ -17,7 +17,10 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Fetch courses everytime the screen is in focus
+    const unsubscribe = navigation.addListener('focus', fetchCourses);
     fetchCourses();
+    return unsubscribe;
   }, []);
 
   const fetchCourses = async () => {
