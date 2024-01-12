@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { View, Alert } from 'react-native';
 import 'react-native-get-random-values';
+import moment from 'moment';
 
 import { ClassPeriod, Course } from '../types';
-import { updateCourse } from '../storage/CoursesStorage';
+import { getAllCourses, updateCourse } from '../storage/CoursesStorage';
 import FormTemplate from '../components/FormTemplate';
 
 const EditCourseScreen = ({ route, navigation }) => {
-  const { course, setCourses } = route.params;
+  const { course } = route.params;
   const [name, setName] = useState(course.name);
   const [code, setCode] = useState(course.code);
   const [credits, setCredits] = useState(course.credits.toString());
@@ -63,6 +64,25 @@ const EditCourseScreen = ({ route, navigation }) => {
     },
   ];
 
+  const doesCourseOverlap = (updatedCourse: Course, existingCourses: Course[]): boolean => {
+    for (let existingCourse of existingCourses) {
+      if (existingCourse.id !== updatedCourse.id) {
+        const courseDuration = existingCourse.schedule[0];
+        const newCourseStartTime = moment(updatedCourse.schedule[0].startTime).format('HH:mm');
+        const newCourseEndTime = moment(updatedCourse.schedule[0].endTime).format('HH:mm');
+        const existingCourseStartTime = moment(courseDuration.startTime).format('HH:mm');
+        const existingCourseEndTime = moment(courseDuration.endTime).format('HH:mm');
+
+        if (courseDuration.day === updatedCourse.schedule[0].day
+          && ((newCourseStartTime >= existingCourseStartTime && newCourseStartTime < existingCourseEndTime)
+          || (newCourseEndTime > existingCourseStartTime && newCourseEndTime <= existingCourseEndTime))) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
   const resetState = () => {
     setName('');
     setCode('');
@@ -97,6 +117,21 @@ const EditCourseScreen = ({ route, navigation }) => {
       return;
     }
 
+    const minTime = moment('7:30', 'HH:mm');
+    const maxTime = moment('17:45', 'HH:mm');
+    const startTimeMoment = moment(startTime);
+    const endTimeMoment = moment(endTime);
+
+    if (startTimeMoment.format('HH:mm') < minTime.format('HH:mm') || startTimeMoment.format('HH:mm') > maxTime.format('HH:mm')) {
+      Alert.alert('Invalid input', 'Start time must be between 7:30 and 17:45');
+      return;
+    }
+
+    if (endTimeMoment.format('HH:mm') < minTime.format('HH:mm') || endTimeMoment.format('HH:mm') > maxTime.format('HH:mm')) {
+      Alert.alert('Invalid input', 'End time must be between 7:30 and 17:45');
+      return;
+    }
+
     const updatedCourse: Course = {
       ...course,
       name,
@@ -106,9 +141,13 @@ const EditCourseScreen = ({ route, navigation }) => {
       schedule: [{ day, startTime, endTime } as ClassPeriod],
     };
 
-    await updateCourse(updatedCourse);
+    const existingCourses = await getAllCourses() || [];
+    if (doesCourseOverlap(updatedCourse, existingCourses)) {
+      Alert.alert('Invalid input', 'This course overlaps with another course.');
+      return;
+    }
 
-    setCourses((prevCourses: Course[]) => prevCourses.map((c: Course) => c.id === course.id ? updatedCourse : c));
+    await updateCourse(updatedCourse);
 
     resetState();
 
