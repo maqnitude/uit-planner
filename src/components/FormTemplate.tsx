@@ -3,7 +3,7 @@ import { Text, View, ScrollView, TextInput, Button, StyleSheet } from 'react-nat
 import DatePicker from 'react-native-date-picker';
 import { Picker } from '@react-native-picker/picker';
 
-type DatePickerMode = 'date' | 'time' | 'datetime';
+export type DatePickerMode = 'date' | 'time' | 'datetime';
 
 interface FormField {
   label: string;

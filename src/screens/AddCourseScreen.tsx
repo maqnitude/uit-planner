@@ -7,6 +7,7 @@ import moment from 'moment';
 import { ClassPeriod, Course } from '../types';
 import FormTemplate from '../components/FormTemplate';
 import { getAllCourses, storeCourse } from '../storage/CoursesStorage';
+import { DatePickerMode } from '../components/FormTemplate';
 
 interface AddCourseScreenProps {
   navigation: any,
@@ -60,16 +61,18 @@ const AddCourseScreen: React.FC<AddCourseScreenProps> = ({ navigation }) => {
       value: startTime,
       isDatePicker: true,
       onDateChange: setStartTime,
+      datePickerMode: 'time' as DatePickerMode,
     },
     {
       label: 'End Time',
       value: endTime,
       isDatePicker: true,
       onDateChange: setEndTime,
+      datePickerMode: 'time' as DatePickerMode,
     },
   ];
 
-  const doesCourseOverlap = (newCourse: Course, existingCourses: Course[]): boolean => {
+  const isCourseOverlapped = (newCourse: Course, existingCourses: Course[]): boolean => {
     for (let existingCourse of existingCourses) {
       const courseDuration = existingCourse.schedule[0];
       const newCourseStartTime = moment(newCourse.schedule[0].startTime).format('HH:mm');
@@ -145,7 +148,7 @@ const AddCourseScreen: React.FC<AddCourseScreenProps> = ({ navigation }) => {
     };
 
     const existingCourses = await getAllCourses() || [];
-    if (doesCourseOverlap(newCourse, existingCourses)) {
+    if (isCourseOverlapped(newCourse, existingCourses)) {
       Alert.alert('Invalid input', 'This course overlaps with another course.');
       return;
     }
