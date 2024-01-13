@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
 import { getCourse } from '../storage/CoursesStorage';
+import { getTasksByCourseId } from '../storage/TasksStorage';
+import { Task } from '../types';
 
 interface CourseDetailsScreenProps {
   navigation: any;
@@ -10,16 +12,19 @@ interface CourseDetailsScreenProps {
 }
 
 const CourseDetailsScreen: React.FC<CourseDetailsScreenProps> = ({ navigation, route }) => {
-  const { item: course, setCourses } = route.params;
+  const { item: course } = route.params;
   const [courseDetails, setCourseDetails] = useState(course);
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   useFocusEffect(
     React.useCallback(() => {
-      const fetchUpdatedCourse = async () => {
+      const fetchUpdatedCourseAndTasks = async () => {
         const updatedCourse = await getCourse(course.id);
+        const courseTasks = await getTasksByCourseId(course.id);
         setCourseDetails(updatedCourse);
+        setTasks(courseTasks);
       };
-      fetchUpdatedCourse();
+      fetchUpdatedCourseAndTasks();
     }, [course.id])
   );
 
@@ -29,7 +34,21 @@ const CourseDetailsScreen: React.FC<CourseDetailsScreenProps> = ({ navigation, r
       <Text style={styles.detail}>Code: {courseDetails.code}</Text>
       <Text style={styles.detail}>Credits: {courseDetails.credits}</Text>
       <Text style={styles.detail}>Location: {courseDetails.location}</Text>
-      <Button title="Edit" onPress={() => navigation.navigate('Edit Course', { course: courseDetails, setCourses })} />
+      <View style={styles.taskContainer}>
+        <ScrollView>
+          {tasks.map((task, index) => (
+            <View key={index}>
+              <Text>{task.name}</Text>
+              <Text>{task.type}</Text>
+              <Text>{task.dueDate.toString()}</Text>
+            </View>
+          ))}
+        </ScrollView>
+      </View>
+      <View style={styles.buttonContainer}>
+        <Button title="Edit" onPress={() => navigation.navigate('Edit Course', { course: courseDetails })} />
+        <Button title="Add task" onPress={() => navigation.navigate('Add Task', { course: courseDetails })} />
+      </View>
     </View>
   );
 };
@@ -47,6 +66,18 @@ const styles = StyleSheet.create({
   detail: {
     fontSize: 18,
     marginBottom: 10,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  taskContainer: {
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 20,
+    height: '60%',
   },
 });
 
