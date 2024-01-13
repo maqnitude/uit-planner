@@ -15,7 +15,8 @@ const AddTaskScreen = ({ route, navigation }) => {
     const [type, setType] = useState('');
     const [dueDateStart, setDueDateStart] = useState(new Date())
     const [dueDateEnd, setDueDateEnd] = useState(new Date())
-    const [courseId, setCourseId] = useState(course.code)
+    const [courseId, setCourseId] = useState(course.id)
+    const [description, setDescription] = useState('')
     const [completed, setCompleted] = useState(Boolean)
 
     const fields = [
@@ -81,6 +82,7 @@ const AddTaskScreen = ({ route, navigation }) => {
             dueDateStart,
             dueDateEnd,
             courseId,
+            description,
             completed,
 
         };

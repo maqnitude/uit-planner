@@ -11,7 +11,7 @@ import DevMenuScreen from './src/screens/DevMenuScreen'
 import TaskScreen from './src/screens/TaskScreen';
 import AddTaskScreen from './src/screens/AddTaskScreen';
 import BottomTabs from './src/components/BottomTabs';
-
+import TaskDetailsScreen from './src/screens/TaskDetailScreen';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -40,6 +40,7 @@ export default function App() {
         <Stack.Screen name="Timetable" component={TimeTable} />
         <Stack.Screen name="Task" component={TaskScreen} />
         <Stack.Screen name="Add Task" component={AddTaskScreen} />
+        <Stack.Screen name="Task Details" component={TaskDetailsScreen} />
         {__DEV__ && (
           <Stack.Screen name="Dev Menu" component={DevMenuScreen} />
         )}

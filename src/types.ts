@@ -27,5 +27,6 @@ export interface Task {
   dueDateStart: Date;
   dueDateEnd: Date;
   courseId: string;
+  description: string;
   completed: boolean;
 }

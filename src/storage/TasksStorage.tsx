@@ -55,3 +55,13 @@ export const removeTask = async (id: string) => {
     throw error;
   }
 };
+export const updateTask = async (updatedTask: Task) => {
+  try {
+    cachedTasks = await getTasksFromStorage();
+    cachedTasks = cachedTasks?.map(task => task.id === updatedTask.id ? updatedTask : task);
+    await AsyncStorage.setItem(TASKS_KEY, JSON.stringify(cachedTasks));
+  } catch (error) {
+    console.error('Error updating task:', error);
+    throw error;
+  }
+};

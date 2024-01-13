@@ -31,6 +31,9 @@ const TaskScreen = ({ route, navigation }) => {
             setIsLoading(false);
         }
     };
+    const handleItemPress = (item: Task) => {
+        navigation.navigate('Task Details', { item, setTask });
+    };
     const handleDeletePress = async (item: Task) => {
         Alert.alert(
             'Delete Course',
@@ -61,19 +64,19 @@ const TaskScreen = ({ route, navigation }) => {
                     data={task}
                     renderItem={({ item }) => {
                         // Add your condition here
-                        if (item.courseId == course.code) {
+                        if (item.courseId == course.id) {
                             return (
                                 <View style={styles.itemBlock}>
-                                    <TouchableOpacity>
+                                    <TouchableOpacity onPress={() => handleItemPress(item)}>
                                         <View>
                                             <Text style={styles.itemTitle}>{item.name}</Text>
-                                            <Text style={styles.itemCode}>{item.courseId}</Text>
+
                                             <View style={styles.containerDue}>
                                                 <Text style={styles.itemDue}>Start: {moment(item.dueDateStart).format('DD/MM')}</Text>
                                                 <Text style={styles.itemDue}>End: {moment(item.dueDateEnd).format('DD/MM')}</Text>
                                                 <Text style={styles.itemDay}>({moment(item.dueDateEnd).format('hh:mm A')})</Text>
                                             </View>
-                                            <Text style={styles.itemDay}>Days Remaining: {moment(item.dueDateEnd).diff(moment(item.dueDateStart), 'h')}h</Text>
+                                            <Text style={styles.itemDay}>Days Remaining: {moment(item.dueDateEnd).diff(moment(), 'days') + 1}days</Text>
                                         </View>
                                     </TouchableOpacity>
                                     <TouchableOpacity onPress={() => handleDeletePress(item)}>
@@ -116,20 +119,20 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        borderWidth: 1,
-        borderColor: 'black',
-        borderRadius: 5,
+        borderRadius: 10,
         marginTop: 20,
         marginHorizontal: 20,
-        padding: 10,
+        backgroundColor: '#90F2BD',
+        padding: 15,
+
     },
     itemTitle: {
-        fontSize: 20,
+        fontSize: 30,
         color: 'black',
-        fontWeight: '700',
+        fontWeight: 'bold',
     },
     itemTitleTask: {
-        fontSize: 20,
+        fontSize: 30,
         color: 'blue',
         fontWeight: '900',
         margin: 10,
@@ -137,17 +140,25 @@ const styles = StyleSheet.create({
     itemCode: {
         fontSize: 16,
         color: 'gray',
-        margin: 5,
+        fontWeight: 'bold',
+        margin: 2,
+
     },
     itemDue: {
         fontSize: 16,
         color: 'blue',
-        margin: 5,
+        fontWeight: 'bold',
+        margin: 2,
+
+
     },
     itemDay: {
         fontSize: 16,
         color: 'red',
-        margin: 5,
+        fontWeight: 'bold',
+        margin: 2,
+
+
     },
     addButton: {
         backgroundColor: '#1e90ff',
