@@ -24,8 +24,7 @@ export interface Task {
   id: string;
   name: string;
   type: string;
-  dueDateStart: Date;
-  dueDateEnd: Date;
+  dueDate: Date;
   courseId: string;
   description: string;
   completed: boolean;
