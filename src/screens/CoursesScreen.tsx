@@ -38,7 +38,7 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
   };
 
   const handleItemPress = (item: Course) => {
-    navigation.navigate('Course Details', { item, setCourses });
+    navigation.navigate('Course Details', { item });
   };
 
   const handleDeletePress = async (item: Course) => {
@@ -70,7 +70,7 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
         <FlatList
           contentContainerStyle={styles.listContent}
           data={courses}
-          renderItem={({item}) => (
+          renderItem={({ item }) => (
             <View style={styles.itemBlock}>
               <TouchableOpacity onPress={() => handleItemPress(item)}>
                 <View>
@@ -79,7 +79,7 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
                 </View>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => handleDeletePress(item)}>
-                  <Icon name="delete" size={25} />
+                <Icon name="delete" size={25} />
               </TouchableOpacity>
             </View>
           )}
