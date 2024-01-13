@@ -30,6 +30,7 @@ const CourseDetailsScreen: React.FC<CourseDetailsScreenProps> = ({ navigation, r
       <Text style={styles.detail}>Credits: {courseDetails.credits}</Text>
       <Text style={styles.detail}>Location: {courseDetails.location}</Text>
       <Button title="Edit" onPress={() => navigation.navigate('Edit Course', { course: courseDetails, setCourses })} />
+      <Button title="Task" onPress={() => navigation.navigate('Task', { course: courseDetails })} />
     </View>
   );
 };

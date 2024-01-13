@@ -12,6 +12,7 @@ interface FormField {
   isDatePicker?: boolean;
   isPicker?: boolean;
   pickerItems?: string[];
+  mode?: string;
 }
 
 interface FormTemplateProps {
@@ -27,11 +28,17 @@ const FormTemplate: React.FC<FormTemplateProps> = ({ fields, onSubmit }) => {
           <Text style={styles.label}>{field.label}</Text>
           {field.isDatePicker ? (
             <View style={styles.timeContainer}>
-              <DatePicker
+              {field.mode ? (<DatePicker
                 date={field.value as Date}
                 onDateChange={field.onDateChange}
-                mode="time"
-              />
+              />) :
+                <DatePicker
+                  date={field.value as Date}
+                  onDateChange={field.onDateChange}
+                  mode="time"
+                />
+              }
+
             </View>
           ) : field.isPicker ? (
             <View style={styles.picker}>
