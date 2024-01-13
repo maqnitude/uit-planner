@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { removeAllCourses } from './CoursesStorage';
 
 export const storeData = async (key: string, data: any[]) => {
   try {
@@ -50,3 +51,7 @@ export const removeInstance = async (key: string, instanceId: string) => {
     console.error(error);
   }
 };
+
+export const removeAllData = async () => {
+  removeAllCourses();
+}
