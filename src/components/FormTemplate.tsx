@@ -3,6 +3,8 @@ import { Text, View, ScrollView, TextInput, Button, StyleSheet } from 'react-nat
 import DatePicker from 'react-native-date-picker';
 import { Picker } from '@react-native-picker/picker';
 
+type DatePickerMode = 'date' | 'time' | 'datetime';
+
 interface FormField {
   label: string;
   placeholder?: string;
@@ -12,7 +14,7 @@ interface FormField {
   isDatePicker?: boolean;
   isPicker?: boolean;
   pickerItems?: string[];
-  mode?: string;
+  datePickerMode?: DatePickerMode;
 }
 
 interface FormTemplateProps {
@@ -28,17 +30,11 @@ const FormTemplate: React.FC<FormTemplateProps> = ({ fields, onSubmit }) => {
           <Text style={styles.label}>{field.label}</Text>
           {field.isDatePicker ? (
             <View style={styles.timeContainer}>
-              {field.mode ? (<DatePicker
+              <DatePicker
                 date={field.value as Date}
                 onDateChange={field.onDateChange}
-              />) :
-                <DatePicker
-                  date={field.value as Date}
-                  onDateChange={field.onDateChange}
-                  mode="time"
-                />
-              }
-
+                mode={field.datePickerMode}
+              />
             </View>
           ) : field.isPicker ? (
             <View style={styles.picker}>
