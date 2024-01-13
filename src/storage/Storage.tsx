@@ -54,4 +54,5 @@ export const removeInstance = async (key: string, instanceId: string) => {
 
 export const removeAllData = async () => {
   removeAllCourses();
-}
+};
+

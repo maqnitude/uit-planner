@@ -21,7 +21,7 @@ export const storeTask = async (task: Task) => {
     cachedTasks?.push(task);
     await AsyncStorage.setItem(TASKS_KEY, JSON.stringify(cachedTasks));
   } catch (error) {
-    console.error('Error storing tasks:', error);
+    console.error('Error storing task:', error);
     throw error;
   }
 };
@@ -40,7 +40,7 @@ export const getTask = async (id: string): Promise<Task | undefined> => {
     const tasks = await getTasksFromStorage();
     return tasks?.find(task => task.id === id);
   } catch (error) {
-    console.error('Error fetching tasks:', error);
+    console.error('Error fetching task:', error);
     throw error;
   }
 };
@@ -51,17 +51,7 @@ export const removeTask = async (id: string) => {
     cachedTasks = cachedTasks?.filter(task => task.id !== id);
     await AsyncStorage.setItem(TASKS_KEY, JSON.stringify(cachedTasks));
   } catch (error) {
-    console.error('Error removing tasks:', error);
-    throw error;
-  }
-};
-export const updateTask = async (updatedTask: Task) => {
-  try {
-    cachedTasks = await getTasksFromStorage();
-    cachedTasks = cachedTasks?.map(task => task.id === updatedTask.id ? updatedTask : task);
-    await AsyncStorage.setItem(TASKS_KEY, JSON.stringify(cachedTasks));
-  } catch (error) {
-    console.error('Error updating task:', error);
+    console.error('Error removing task:', error);
     throw error;
   }
 };
