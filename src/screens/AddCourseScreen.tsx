@@ -6,13 +6,14 @@ import moment from 'moment';
 
 import { ClassPeriod, Course } from '../types';
 import FormTemplate from '../components/FormTemplate';
-import { addInstance } from '../storage/Storage';
 import { storeCourse } from '../storage/CoursesStorage';
 
+interface AddCourseScreenProps {
+  navigation: any,
+}
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-const AddCourseScreen = ({ route, navigation }) => {
-  const { setCourses } = route.params;
+const AddCourseScreen: React.FC<AddCourseScreenProps> = ({ navigation }) => {
   const [name, setName] = useState('');
   const [code, setCode] = useState('');
   const [credits, setCredits] = useState('');
@@ -126,10 +127,7 @@ const AddCourseScreen = ({ route, navigation }) => {
       schedule: [{ day, startTime, endTime } as ClassPeriod],
     };
 
-    // await addInstance('course', newCourse);
     await storeCourse(newCourse);
-
-    setCourses((prevCourses: Course[]) => [...prevCourses, newCourse]);
 
     resetState();
 
