@@ -1,12 +1,32 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
-import { removeAllData } from "../storage/Storage";
+import { clearStorage, populateStorage } from "../storage/Storage";
 
 interface DevMenuScreenProps {
   navigation: any;
 }
 
 const DevMenuScreen: React.FC<DevMenuScreenProps> = ({ navigation }) => {
+  const populateDatabase = async () => {
+    Alert.alert(
+      'Populate Database',
+      'This action will first clear all the data currently in storage. Are you sure to continue?',
+      [
+        {
+          text: 'No',
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: async () => {
+            await clearStorage();
+            await populateStorage();
+          }
+        }
+      ]
+    );
+  };
+
   const clearDatabase = async () => {
     Alert.alert(
       'Clear Database',
@@ -19,7 +39,7 @@ const DevMenuScreen: React.FC<DevMenuScreenProps> = ({ navigation }) => {
         {
           text: 'Yes',
           onPress: async () => {
-            await removeAllData();
+            await clearStorage();
           }
         }
       ]
@@ -28,7 +48,7 @@ const DevMenuScreen: React.FC<DevMenuScreenProps> = ({ navigation }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => populateDatabase()}>
         <View style={styles.button}>
           <Text style={{ color: 'white' }}>Populate Database</Text>
         </View>
