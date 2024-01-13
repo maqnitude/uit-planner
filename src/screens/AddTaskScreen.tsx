@@ -1,90 +1,84 @@
 import React, { useState } from 'react';
-import { View, Alert, } from 'react-native';
+import { View, Alert } from 'react-native';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
 
-import { ClassPeriod, Course, Task } from '../types';
+import { Task } from '../types';
 import FormTemplate from '../components/FormTemplate';
-
 import { storeTask } from '../storage/TasksStorage';
+import { DatePickerMode } from '../components/FormTemplate';
 
-const AddTaskScreen = ({ route, navigation }) => {
-  const { course, setCourses } = route.params;
+interface AddTaskScreenProps {
+  route: any,
+  navigation: any,
+}
+
+const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
+  const { course } = route.params;
   const [name, setName] = useState('');
   const [type, setType] = useState('');
-  const [dueDateStart, setDueDateStart] = useState(new Date())
-  const [dueDateEnd, setDueDateEnd] = useState(new Date())
-  const [courseId, setCourseId] = useState(course.id)
-  const [description, setDescription] = useState('')
-  const [completed, setCompleted] = useState(Boolean)
+  const [dueDate, setDueDate] = useState(new Date());
+  const [description, setDescription] = useState('');
 
   const fields = [
     {
-      label: 'Name Task',
-      placeholder: 'Enter name task',
+      label: 'Task Title',
+      placeholder: 'Enter task title',
       value: name,
       onChangeText: setName,
     },
     {
-      label: 'Type Task',
-      placeholder: 'Enter type task',
+      label: 'Task Type',
+      placeholder: 'Enter task label',
       value: type,
       onChangeText: setType,
     },
     {
-      label: 'Due Day Start',
-      placeholder: 'Select day',
-      value: dueDateStart,
+      label: 'Due day',
+      value: dueDate,
       isDatePicker: true,
-      FormData: "YYYY-MM-DD",
-      mode: 'Date',
-      onDateChange: setDueDateStart,
+      datePickerMode: 'datetime' as DatePickerMode,
+      onDateChange: setDueDate,
     },
     {
-      label: 'Due Day End',
-      placeholder: 'Select day',
-      value: dueDateEnd,
-      isDatePicker: true,
-      FormData: "YYYY-MM-DD",
-      mode: 'Date',
-      onDateChange: setDueDateEnd,
+      label: 'Description',
+      placeholder: 'Enter task description',
+      value: description,
+      onChangeText: setDescription,
     },
-
   ];
 
   const resetState = () => {
     setName('');
     setType('');
-    setDueDateStart(new Date());
-    setDueDateEnd(new Date());
-
-
+    setDescription('');
   };
 
   const handleSubmit = async () => {
     if (!name || name.length > 100) {
-      Alert.alert('Invalid input', 'Please enter a valid course name (1-100 characters).');
+      Alert.alert('Invalid input', 'Please enter a valid task title (1-100 characters).');
       return;
     }
 
-    if (!type || type.length > 100) {
-      Alert.alert('Invalid input', 'Please enter a valid course code (1-100 characters).');
+    if (!type || type.length > 30) {
+      Alert.alert('Invalid input', 'Please enter a valid task type (1-30 characters).');
       return;
     }
 
-
+    if (!moment(dueDate).isAfter(moment())) {
+      Alert.alert('Invalid input', 'Due date should be later than the current time.');
+      return;
+    }
 
     const newTask: Task = {
       id: uuidv4(),
+      courseId: course.id,
       name,
       type,
-      dueDateStart,
-      dueDateEnd,
-      courseId,
+      dueDate,
       description,
-      completed,
-
+      completed: false,
     };
 
     await storeTask(newTask);
