@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { Course, Task } from '../types';
+import { Task } from '../types';
 
 const TASKS_KEY = 'tasks';
 
@@ -41,6 +41,16 @@ export const getTask = async (id: string): Promise<Task | undefined> => {
     return tasks?.find(task => task.id === id);
   } catch (error) {
     console.error('Error fetching task:', error);
+    throw error;
+  }
+};
+
+export const getTasksByCourseId = async (courseId: string): Promise<Task[]> => {
+  try {
+    const tasks = await getTasksFromStorage();
+    return tasks ? tasks.filter(task => task.courseId === courseId) : [];
+  } catch (error) {
+    console.error('Error fetching tasks by course ID:', error);
     throw error;
   }
 };
