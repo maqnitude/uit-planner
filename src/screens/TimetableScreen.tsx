@@ -107,6 +107,7 @@ const styles = StyleSheet.create({
   timeSlot: {
     borderRightWidth: 0.5,
     borderBottomWidth: 0.5,
+    borderStyle: 'dashed',
   },
 });
 

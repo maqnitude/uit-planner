@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     borderRadius: 10,
+    elevation: 4,
   },
   courseName: {
     fontSize: 14,

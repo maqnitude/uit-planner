@@ -6,7 +6,7 @@ import moment from 'moment';
 
 import { ClassPeriod, Course } from '../types';
 import FormTemplate from '../components/FormTemplate';
-import { storeCourse } from '../storage/CoursesStorage';
+import { getAllCourses, storeCourse } from '../storage/CoursesStorage';
 
 interface AddCourseScreenProps {
   navigation: any,
@@ -69,6 +69,23 @@ const AddCourseScreen: React.FC<AddCourseScreenProps> = ({ navigation }) => {
     },
   ];
 
+  const doesCourseOverlap = (newCourse: Course, existingCourses: Course[]): boolean => {
+    for (let existingCourse of existingCourses) {
+      const courseDuration = existingCourse.schedule[0];
+      const newCourseStartTime = moment(newCourse.schedule[0].startTime).format('HH:mm');
+      const newCourseEndTime = moment(newCourse.schedule[0].endTime).format('HH:mm');
+      const existingCourseStartTime = moment(courseDuration.startTime).format('HH:mm');
+      const existingCourseEndTime = moment(courseDuration.endTime).format('HH:mm');
+
+      if (courseDuration.day === newCourse.schedule[0].day
+        && ((newCourseStartTime >= existingCourseStartTime && newCourseStartTime < existingCourseEndTime)
+        || (newCourseEndTime > existingCourseStartTime && newCourseEndTime <= existingCourseEndTime))) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   const resetState = () => {
     setName('');
     setCode('');
@@ -126,6 +143,12 @@ const AddCourseScreen: React.FC<AddCourseScreenProps> = ({ navigation }) => {
       location,
       schedule: [{ day, startTime, endTime } as ClassPeriod],
     };
+
+    const existingCourses = await getAllCourses() || [];
+    if (doesCourseOverlap(newCourse, existingCourses)) {
+      Alert.alert('Invalid input', 'This course overlaps with another course.');
+      return;
+    }
 
     await storeCourse(newCourse);
 
