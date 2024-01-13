@@ -4,11 +4,11 @@ import { useFocusEffect } from '@react-navigation/native';
 import 'react-native-get-random-values';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
-import { Course, Task } from '../types';
+import { Task } from '../types';
 import { getAllTasks, removeTask } from '../storage/TasksStorage';
 
 
-const TaskScreen = ({ route, navigation }) => {
+const TasksScreen = ({ route, navigation }) => {
     const { course, setCourses } = route.params;
     const [task, setTask] = useState<Task[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -142,23 +142,18 @@ const styles = StyleSheet.create({
         color: 'gray',
         fontWeight: 'bold',
         margin: 2,
-
     },
     itemDue: {
         fontSize: 16,
         color: 'blue',
         fontWeight: 'bold',
         margin: 2,
-
-
     },
     itemDay: {
         fontSize: 16,
         color: 'red',
         fontWeight: 'bold',
         margin: 2,
-
-
     },
     addButton: {
         backgroundColor: '#1e90ff',
@@ -177,4 +172,5 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 });
-export default TaskScreen;
+
+export default TasksScreen;
