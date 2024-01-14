@@ -6,6 +6,11 @@ const SEMESTERS_KEY = 'semesters';
 
 let cachedSemesters: Semester[] | undefined;
 
+async function storeSemestersToStorage(semesters: Semester[]) {
+  cachedSemesters = semesters;
+  await AsyncStorage.setItem(SEMESTERS_KEY, JSON.stringify(semesters));
+}
+
 async function getSemestersFromStorage(): Promise<Semester[] | undefined> {
   if (cachedSemesters !== undefined) {
     return cachedSemesters;
@@ -52,6 +57,17 @@ export const removeSemester = async (id: string) => {
     await AsyncStorage.setItem(SEMESTERS_KEY, JSON.stringify(cachedSemesters));
   } catch (error) {
     console.error('Error removing semester:', error);
+    throw error;
+  }
+};
+
+export const updateSemester = async (updatedSemester: Semester) => {
+  try {
+    let semesters = await getSemestersFromStorage() || [];
+    semesters = semesters?.map(semester => semester.id === updatedSemester.id ? updatedSemester : semester);
+    await storeSemestersToStorage(semesters);
+  } catch (error) {
+    console.error('Error updating semester:', error);
     throw error;
   }
 };

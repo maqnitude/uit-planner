@@ -12,6 +12,11 @@ import TasksScreen from './src/screens/TasksScreen';
 import AddTaskScreen from './src/screens/AddTaskScreen';
 import BottomTabs from './src/components/BottomTabs';
 import TaskDetailsScreen from './src/screens/TaskDetailsScreen';
+import MainScreen from './src/screens/MainScreen';
+import SemesterScreen from './src/screens/SemestersScreen';
+import AddSemesterScreen from './src/screens/AddSemesterScreen';
+import SemesterDetailsScreen from './src/screens/SemesterDetailsScreen';
+import EditSemesterScreen from './src/screens/EditSemesterScreen';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -33,6 +38,11 @@ export default function App() {
           component={BottomTabs}
           options={{ headerShown: false }}
         />
+        <Stack.Screen name="Home" component={MainScreen} />
+        <Stack.Screen name="Semesters" component={SemesterScreen} />
+        <Stack.Screen name="Add Semester" component={AddSemesterScreen} />
+        <Stack.Screen name="Semester Details" component={SemesterDetailsScreen} />
+        <Stack.Screen name="Edit Semester" component={EditSemesterScreen} />
         <Stack.Screen name="Courses" component={CoursesScreen} />
         <Stack.Screen name="Add Course" component={AddCourseScreen} />
         <Stack.Screen name="Course Details" component={CourseDetailsScreen} />
