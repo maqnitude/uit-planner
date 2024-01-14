@@ -9,7 +9,7 @@ let cachedCourses: Course[] | undefined;
 async function storeCoursesToStorage(courses: Course[]) {
   cachedCourses = courses;
   await AsyncStorage.setItem(COURSES_KEY, JSON.stringify(courses));
-}
+};
 
 async function getCoursesFromStorage(): Promise<Course[] | undefined> {
   if (cachedCourses !== undefined) {
@@ -17,8 +17,8 @@ async function getCoursesFromStorage(): Promise<Course[] | undefined> {
   }
 
   const result = await AsyncStorage.getItem(COURSES_KEY);
-  return result !== null ? JSON.parse(result) : [];
-}
+  return result !== null ? JSON.parse(result) : undefined;
+};
 
 export const storeCourse = async (course: Course) => {
   try {
@@ -40,7 +40,7 @@ export const storeCourses = async (newCourses: Course[]) => {
     console.error('Error storing courses:', error);
     throw error;
   }
-}
+};
 
 export const getCourse = async (id: string): Promise<Course | undefined> => {
   try {
@@ -80,7 +80,7 @@ export const removeAllCourses = async () => {
     console.error('Error removing all courses:', error);
     throw error;
   }
-}
+};
 
 export const updateCourse = async (updatedCourse: Course) => {
   try {
