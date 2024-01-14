@@ -56,8 +56,9 @@ export const removeInstance = async (key: string, instanceId: string) => {
 
 export const populateStorage = async () => {
   await storeCourses(testCourses);
-}
+};
 
 export const clearStorage = async () => {
   await removeAllCourses();
-}
+};
+

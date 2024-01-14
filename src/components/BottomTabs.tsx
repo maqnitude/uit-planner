@@ -1,10 +1,12 @@
 import React from 'react';
 import { ComponentType } from 'react';
 import { createBottomTabNavigator, BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import FAIcon from 'react-native-vector-icons/FontAwesome5';
 
 import CoursesScreen from '../screens/CoursesScreen';
 import TimeTable from '../screens/TimetableScreen';
+import TasksScreen from '../screens/TasksScreen';
 import DevMenuScreen from '../screens/DevMenuScreen';
 
 const Tab = createBottomTabNavigator();
@@ -21,7 +23,16 @@ const screens: TabScreenProps[] = [
     component: CoursesScreen,
     options: {
       tabBarIcon: ({ color, size }) => (
-        <Icon name="google-classroom" color={color} size={size} />
+        <MCIcon name="google-classroom" color={color} size={size} />
+      ),
+    },
+  },
+  {
+    name: 'Tasks',
+    component: TasksScreen,
+    options: {
+      tabBarIcon: ({ color, size }) => (
+        <FAIcon name="tasks" color={color} size={size} />
       ),
     },
   },
@@ -30,7 +41,7 @@ const screens: TabScreenProps[] = [
     component: TimeTable,
     options: {
       tabBarIcon: ({ color, size }) => (
-        <Icon name="timetable" color={color} size={size} />
+        <MCIcon name="timetable" color={color} size={size} />
       ),
     },
   },

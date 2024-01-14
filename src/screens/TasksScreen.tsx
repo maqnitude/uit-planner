@@ -3,33 +3,33 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react
 import { useFocusEffect } from '@react-navigation/native';
 import 'react-native-get-random-values';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import moment from 'moment';
+import { Task } from '../types';
+import { getAllTasks, removeTask } from '../storage/TasksStorage';
 
-import { Course } from '../types';
-import { getAllCourses, removeCourse } from '../storage/CoursesStorage';
-
-interface CoursesScreenProps {
+interface TasksScreenProps {
   navigation: any;
 }
 
-const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
-  const [courses, setCourses] = useState<Course[]>([]);
+const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useFocusEffect(
     React.useCallback(() => {
-      fetchCourses();
+      fetchTasks();
     }, [])
   );
 
-  const fetchCourses = async () => {
+  const fetchTasks = async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const fetchedCourses = await getAllCourses();
-      setCourses(fetchedCourses ?? []);
+      const fetchedTasks = await getAllTasks();
+      setTasks(fetchedTasks ?? []);
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -37,14 +37,14 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
     }
   };
 
-  const handleItemPress = (item: Course) => {
-    navigation.navigate('Course Details', { item });
+  const handleItemPress = (item: Task) => {
+    navigation.navigate('Task Details', { item });
   };
 
-  const handleDeletePress = async (item: Course) => {
+  const handleDeletePress = async (item: Task) => {
     Alert.alert(
-      'Delete Course',
-      'Are you sure to delete this course?',
+      'Delete Task',
+      'Are you sure to delete this task?',
       [
         {
           text: 'Cancel',
@@ -53,8 +53,8 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
         {
           text: 'OK',
           onPress: async () => {
-            await removeCourse(item.id);
-            fetchCourses();
+            await removeTask(item.id);
+            fetchTasks();
           },
         },
       ]
@@ -63,19 +63,19 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {isLoading && <Text>Loading courses...</Text>}
-      {error && <Text style={styles.errorText}>Error loading courses: {error}</Text>}
+      {isLoading && <Text>Loading tasks...</Text>}
+      {error && <Text style={styles.errorText}>Error loading tasks: {error}</Text>}
 
       {!isLoading && !error && (
         <FlatList
           contentContainerStyle={styles.listContent}
-          data={courses}
+          data={tasks}
           renderItem={({ item }) => (
             <View style={styles.itemBlock}>
               <TouchableOpacity onPress={() => handleItemPress(item)}>
                 <View>
                   <Text style={styles.itemTitle}>{item.name}</Text>
-                  <Text style={styles.itemCode}>{item.code}</Text>
+                  <Text style={styles.itemDue}>Due: {moment(item.dueDate).format('DD MM YYYY hh:mm:ss')}</Text>
                 </View>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => handleDeletePress(item)}>
@@ -83,13 +83,9 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           )}
-          keyExtractor={item => item.code}
+          keyExtractor={item => item.name}
         />
       )}
-
-      <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('Add Course', { setCourses })}>
-        <Text style={styles.addButtonText}>+</Text>
-      </TouchableOpacity>
     </View>
   );
 };
@@ -109,7 +105,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'black',
     borderRadius: 5,
     marginTop: 20,
     marginHorizontal: 20,
@@ -118,29 +113,13 @@ const styles = StyleSheet.create({
   itemTitle: {
     fontSize: 20,
     color: 'black',
-    fontWeight: '700',
-  },
-  itemCode: {
-    fontSize: 16,
-    color: 'gray',
-    margin: 5,
-  },
-  addButton: {
-    backgroundColor: '#1e90ff',
-    width: 50,
-    height: 50,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
-    bottom: 10,
-    right: 10,
-  },
-  addButtonText: {
-    color: 'white',
-    fontSize: 32,
     fontWeight: 'bold',
+  },
+  itemDue: {
+    fontSize: 16,
+    color: 'blue',
+    margin: 2,
   },
 });
 
-export default CoursesScreen;
+export default TasksScreen;

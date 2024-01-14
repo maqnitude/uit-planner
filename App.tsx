@@ -7,10 +7,11 @@ import AddCourseScreen from './src/screens/AddCourseScreen';
 import EditCourseScreen from './src/screens/EditCourseScreen';
 import CourseDetailsScreen from './src/screens/CourseDetailsScreen';
 import TimeTable from './src/screens/TimetableScreen';
-import DevMenuScreen from './src/screens/DevMenuScreen'
-
+import DevMenuScreen from './src/screens/DevMenuScreen';
+import TasksScreen from './src/screens/TasksScreen';
+import AddTaskScreen from './src/screens/AddTaskScreen';
 import BottomTabs from './src/components/BottomTabs';
-
+import TaskDetailsScreen from './src/screens/TaskDetailsScreen';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -37,11 +38,14 @@ export default function App() {
         <Stack.Screen name="Course Details" component={CourseDetailsScreen} />
         <Stack.Screen name="Edit Course" component={EditCourseScreen} />
         <Stack.Screen name="Timetable" component={TimeTable} />
+        <Stack.Screen name="Tasks" component={TasksScreen} />
+        <Stack.Screen name="Add Task" component={AddTaskScreen} />
+        <Stack.Screen name="Task Details" component={TaskDetailsScreen} />
         {__DEV__ && (
           <Stack.Screen name="Dev Menu" component={DevMenuScreen} />
         )}
         {/* Other screens */}
       </Stack.Navigator>
-      </NavigationContainer>
+    </NavigationContainer>
   );
 }
