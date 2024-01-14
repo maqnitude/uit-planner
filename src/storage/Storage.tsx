@@ -1,5 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { removeAllCourses } from './CoursesStorage';
+import { storeCourses } from './CoursesStorage';
+import { testCourses } from './TestData';
 
 export const storeData = async (key: string, data: any[]) => {
   try {
@@ -52,7 +54,11 @@ export const removeInstance = async (key: string, instanceId: string) => {
   }
 };
 
-export const removeAllData = async () => {
-  removeAllCourses();
+export const populateStorage = async () => {
+  await storeCourses(testCourses);
+};
+
+export const clearStorage = async () => {
+  await removeAllCourses();
 };
 
