@@ -17,8 +17,7 @@ const CourseBlock: React.FC<CourseBlockProps> = ({ course, color = '#e3e3e3', he
       <Text style={styles.courseName}>{course.name}</Text>
       <Text style={styles.courseCode}>{course.code}</Text>
       <Text style={styles.courseLocation}>Loc: {course.location}</Text>
-      <Text style={styles.courseTime}>Start: {moment(course.schedule[0].startTime).format('HH:mm')}</Text>
-      <Text style={styles.courseTime}>End: {moment(course.schedule[0].endTime).format('HH:mm')}</Text>
+      <Text style={styles.courseTime}>{moment(course.schedule[0].startTime).format('HH:mm')} - {moment(course.schedule[0].endTime).format('HH:mm')}</Text>
     </View>
   );
 };
