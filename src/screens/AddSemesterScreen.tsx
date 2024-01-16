@@ -79,21 +79,20 @@ const AddSemesterScreen: React.FC<AddSemesterScreenProps> = ({ navigation }) => 
     const endYear = endTimeMoment.year();
 
     if (startYear < 2013 || endYear < 2013) {
-        Alert.alert('Invalid input', 'Start and end year must be greater than or equal to 2013');
-        return;
+      Alert.alert('Invalid input', 'Start and end year must be greater than or equal to 2013');
+      return;
     }
 
     const monthDifference = endTimeMoment.month() - startTimeMoment.month();
-    if (monthDifference > 6)
-    {
-        Alert.alert('Invalid input', 'Month difference must be at most 6 months');
-        return;
+    if (monthDifference > 6) {
+      Alert.alert('Invalid input', 'Month difference must be at most 6 months');
+      return;
     }
 
     const yearDifference = endYear - startYear;
     if (yearDifference > 1) {
-        Alert.alert('Invalid input', 'Year difference must be at most 1 year');
-        return;
+      Alert.alert('Invalid input', 'Year difference must be at most 1 year');
+      return;
     }
 
     const newSemester: Semester = {

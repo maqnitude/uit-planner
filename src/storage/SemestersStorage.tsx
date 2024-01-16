@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { Course, Semester } from '../types';
+import { Semester } from '../types';
 
 const SEMESTERS_KEY = 'semesters';
 
@@ -79,7 +79,7 @@ export const removeAllSemesters = async () => {
     console.error('Error removing all semesters:', error);
     throw error;
   }
-}
+};
 
 export const updateSemester = async (updatedSemester: Semester) => {
   try {

@@ -8,7 +8,7 @@ import CoursesScreen from '../screens/CoursesScreen';
 import TimeTable from '../screens/TimetableScreen';
 import TasksScreen from '../screens/TasksScreen';
 import DevMenuScreen from '../screens/DevMenuScreen';
-import MainScreen from '../screens/MainScreen';
+import HomeScreen from '../screens/HomeScreen';
 import SemesterScreen from '../screens/SemestersScreen';
 
 const Tab = createBottomTabNavigator();
@@ -22,7 +22,7 @@ interface TabScreenProps {
 const screens: TabScreenProps[] = [
   {
     name: 'Home',
-    component: MainScreen,
+    component: HomeScreen,
     options: {
       tabBarIcon: ({ color, size }) => (
         <MCIcon name="home" color={color} size={size} />

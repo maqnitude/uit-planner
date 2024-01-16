@@ -39,8 +39,8 @@ const DevMenuScreen: React.FC<DevMenuScreenProps> = ({ navigation }) => {
             await clearStorage();
             await populateStorage();
             setRefresh(true);
-          }
-        }
+          },
+        },
       ]
     );
   };
@@ -87,8 +87,8 @@ const DevMenuScreen: React.FC<DevMenuScreenProps> = ({ navigation }) => {
           onPress: async () => {
             await clearStorage();
             setRefresh(true);
-          }
-        }
+          },
+        },
       ]
     );
   };

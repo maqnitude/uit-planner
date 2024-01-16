@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Button } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
 import { getSemester } from '../storage/SemestersStorage';
@@ -26,9 +26,9 @@ const SemesterDetailsScreen: React.FC<SemesterDetailsScreenProps> = ({ navigatio
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{semesterDetails.name}</Text>
-      <Text style={styles.title}>Start Time: {moment(semesterDetails.start).format('MM-DD-YYYY')}</Text>
-      <Text style={styles.title}>End Time: {moment(semesterDetails.end).format('MM-DD-YYYY')}</Text>
+      <Text style={styles.title}>Semester: {semesterDetails.name}</Text>
+      <Text>Start: {moment(semesterDetails.start).format('DD-MM-YYYY')}</Text>
+      <Text>End: {moment(semesterDetails.end).format('DD-MM-YYYY')}</Text>
       <View style={styles.buttonContainer}>
         <Button title="Edit" onPress={() => navigation.navigate('Edit Semester', { semester: semesterDetails })} />
       </View>
@@ -44,13 +44,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   detail: {
     fontSize: 18,
     marginBottom: 10,
   },
   buttonContainer: {
+    marginVertical: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },

@@ -12,7 +12,7 @@ import TasksScreen from './src/screens/TasksScreen';
 import AddTaskScreen from './src/screens/AddTaskScreen';
 import BottomTabs from './src/components/BottomTabs';
 import TaskDetailsScreen from './src/screens/TaskDetailsScreen';
-import MainScreen from './src/screens/MainScreen';
+import HomeScreen from './src/screens/HomeScreen';
 import SemesterScreen from './src/screens/SemestersScreen';
 import AddSemesterScreen from './src/screens/AddSemesterScreen';
 import SemesterDetailsScreen from './src/screens/SemesterDetailsScreen';
@@ -38,7 +38,7 @@ export default function App() {
           component={BottomTabs}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="Home" component={MainScreen} />
+        <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Semesters" component={SemesterScreen} />
         <Stack.Screen name="Add Semester" component={AddSemesterScreen} />
         <Stack.Screen name="Semester Details" component={SemesterDetailsScreen} />
