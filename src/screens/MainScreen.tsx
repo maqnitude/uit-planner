@@ -105,7 +105,7 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
     .filter(task => new Date(task.dueDate) > now)
     .sort((task1, task2) => new Date(task1.dueDate) - new Date(task2.dueDate))
     .slice(0, 5);
-  
+
   const startDate = new Date('2024-01-01');
   const endDate = new Date('2024-02-20');
   const currentDate = new Date();
@@ -125,15 +125,17 @@ const MainScreen: React.FC<MainScreenProps> = ({ navigation, route }) => {
         </View>
         {isLoading && <Text>Loading courses...</Text>}
         {error && <Text style={styles.errorText}>Error loading courses: {error}</Text>}
-        <View style={styles.progressContainer}>
-          <Text style={styles.title}>Upcoming Course</Text>
-          <Text style={styles.title}>Name: {nearestCourse.name}</Text>
-          <Text style={styles.title}>Code: {nearestCourse.code}</Text>
-          <Text style={styles.title}>Location: {nearestCourse.location}</Text>
-          <Text style={styles.title}>Start Time: {nearestCourse.schedule[0].startTime.toString()}</Text>
-          <Text style={styles.title}>End Time: {nearestCourse.schedule[0].endTime.toString()}</Text>
-          <Button title="Viewing All Course" onPress={() => navigation.navigate('Courses')} />
-        </View>
+        {
+          // <View style={styles.progressContainer}>
+          //   <Text style={styles.title}>Upcoming Course</Text>
+          //   <Text style={styles.title}>Name: {nearestCourse.name}</Text>
+          //   <Text style={styles.title}>Code: {nearestCourse.code}</Text>
+          //   <Text style={styles.title}>Location: {nearestCourse.location}</Text>
+          //   <Text style={styles.title}>Start Time: {nearestCourse.schedule[0].startTime.toString()}</Text>
+          //   <Text style={styles.title}>End Time: {nearestCourse.schedule[0].endTime.toString()}</Text>
+          //   <Button title="Viewing All Course" onPress={() => navigation.navigate('Courses')} />
+          // </View>
+        }
         {isLoadingTask && <Text>Loading tasks...</Text>}
         {errorTask && <Text style={styles.errorText}>Error loading tasks: {errorTask}</Text>}
         <View style={styles.progressContainer}>
