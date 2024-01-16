@@ -4,7 +4,7 @@ export interface Course {
   code: string;
   credits: number;
   location: string;
-  // semesterId: string;
+  semesterId: string;
   schedule: ClassPeriod[];
 }
 
