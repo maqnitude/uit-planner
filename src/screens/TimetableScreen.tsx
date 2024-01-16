@@ -8,7 +8,7 @@ import { Course } from '../types';
 import { getAllCourses } from '../storage/CoursesStorage';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-const TIME_STAMPS = ['7:30', '8:15', '9:00', '9:45', '10:30', '11:15', '12:00', '12:45', '13:00', '13:45', '14:30', '15:15', '16:15', '17:00'];
+const TIME_STAMPS = ['7:30', '8:15', '9:00', '10:00', '10:45', '11:30', '13:00', '13:45', '14:30', '15:30', '16:15', '17:00'];
 const DAY_COLORS = {
   'Monday': '#CBE4F9',
   'Tuesday': '#CDF5F6',
@@ -22,29 +22,52 @@ const TIMES = TIME_STAMPS.map(time => moment(time, 'HH:mm'));
 const TimeTable = () => {
   const [courses, setCourses] = useState<Course[]>([]);
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   useFocusEffect(
     React.useCallback(() => {
-      const fetchCourses = async () => {
-        console.log('Fetching courses...');
-        const fetchedCourses = await getAllCourses();
-        console.log('Fetched courses: ', fetchedCourses);
-        setCourses(fetchedCourses ?? []);
-      };
       fetchCourses();
     }, [])
   );
+
+  const fetchCourses = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const fetchedCourses = await getAllCourses();
+      setCourses(fetchedCourses ?? []);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const screenWidth = Dimensions.get('window').width;
   const timeStampWidth = 50;
   const headerHeight = 30;
   const unitHeight = 90;
+  const heights = TIMES.map((time, index) => {
+    const timeEnd = TIMES[index + 1];
+    let height = unitHeight;
+    if (timeEnd) {
+      const duration = timeEnd.diff(time, 'minutes');
+      height = duration * (unitHeight / 45);
+    }
+    return height;
+  });
+
   return (
     <View style={styles.container}>
+      {isLoading && <Text>Loading timetable...</Text>}
+      {error && <Text style={styles.errorText}>Error loading timetable: {error}</Text>}
       <ScrollView>
         <View style={styles.row}>
           <View style={{ marginBottom: unitHeight, marginTop: headerHeight }}>
             {TIME_STAMPS.map((time, index) => (
-              <View key={index} style={[styles.timeStamp, {width: timeStampWidth, height: unitHeight, borderTopWidth: index === 0 ? 0.5 : 0}]}>
+              <View key={index} style={[styles.timeStamp, {width: timeStampWidth, height: heights[index], borderTopWidth: index === 0 ? 0.5 : 0}]}>
                 <Text style={styles.boldText}>{time}</Text>
               </View>
             ))}
@@ -55,11 +78,11 @@ const TimeTable = () => {
                 <View key={dayIndex} style={{ width: (screenWidth - timeStampWidth) / 3 }}>
                   <Text style={[styles.header, styles.boldText, {height: headerHeight}]}>{day}</Text>
                   {TIMES.map((time, timeIndex) => {
-                    return <View key={timeIndex} style={[styles.timeSlot, {height: unitHeight}]}>
+                    return <View key={timeIndex} style={[styles.timeSlot, {height: heights[timeIndex]}]}>
                       {courses.map((course, courseIndex) => {
                         const courseStartTime = moment(course.schedule[0].startTime).format('HH:mm');
                         const courseEndTime = moment(course.schedule[0].endTime).format('HH:mm');
-                        const timeSlotEnd = moment(time).add(45, 'minutes').format('HH:mm');
+                        const timeSlotEnd = TIMES[timeIndex + 1] ? moment(TIMES[timeIndex + 1]).format('HH:mm') : moment(time).add(45, 'minutes').format('HH:mm');
                         if (courseStartTime >= time.format('HH:mm') && courseStartTime < timeSlotEnd && course.schedule[0].day === day) {
                           const courseDurationMinutes = moment.duration(moment(courseEndTime, 'HH:mm').diff(moment(courseStartTime, 'HH:mm'))).asMinutes();
                           const blockHeight = courseDurationMinutes * unitHeight / 45;
@@ -95,19 +118,23 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
     borderRightWidth: 0.5,
   },
-  boldText: {
-    fontWeight: 'bold',
+  timeSlot: {
+    borderRightWidth: 0.5,
+    borderBottomWidth: 0.5,
+    borderStyle: 'dashed',
   },
   header: {
+    fontSize: 15,
     textAlign: 'center',
     backgroundColor: '#b5e2ff',
     borderLeftWidth: 0.5,
     borderBottomWidth: 0.5,
   },
-  timeSlot: {
-    borderRightWidth: 0.5,
-    borderBottomWidth: 0.5,
-    borderStyle: 'dashed',
+  boldText: {
+    fontWeight: 'bold',
+  },
+  errorText: {
+    color: 'red',
   },
 });
 

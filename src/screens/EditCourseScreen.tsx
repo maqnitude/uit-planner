@@ -6,8 +6,15 @@ import moment from 'moment';
 import { ClassPeriod, Course } from '../types';
 import { getAllCourses, updateCourse } from '../storage/CoursesStorage';
 import FormTemplate from '../components/FormTemplate';
+import { DatePickerMode } from '../components/FormTemplate';
 
-const EditCourseScreen = ({ route, navigation }) => {
+interface EditCourseScreenProps {
+  route: any,
+  navigation: any,
+}
+const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+const EditCourseScreen: React.FC<EditCourseScreenProps> = ({ route, navigation }) => {
   const { course } = route.params;
   const [name, setName] = useState(course.name);
   const [code, setCode] = useState(course.code);
@@ -47,7 +54,7 @@ const EditCourseScreen = ({ route, navigation }) => {
       placeholder: 'Select day',
       value: day,
       isPicker: true,
-      pickerItems: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+      pickerItems: DAYS,
       onChangeText: setDay,
     },
     {
@@ -55,16 +62,18 @@ const EditCourseScreen = ({ route, navigation }) => {
       value: startTime,
       isDatePicker: true,
       onDateChange: setStartTime,
+      datePickerMode: 'time' as DatePickerMode,
     },
     {
       label: 'End Time',
       value: endTime,
       isDatePicker: true,
       onDateChange: setEndTime,
+      datePickerMode: 'time' as DatePickerMode,
     },
   ];
 
-  const doesCourseOverlap = (updatedCourse: Course, existingCourses: Course[]): boolean => {
+  const isCourseOverlapped = (updatedCourse: Course, existingCourses: Course[]): boolean => {
     for (let existingCourse of existingCourses) {
       if (existingCourse.id !== updatedCourse.id) {
         const courseDuration = existingCourse.schedule[0];
@@ -142,7 +151,7 @@ const EditCourseScreen = ({ route, navigation }) => {
     };
 
     const existingCourses = await getAllCourses() || [];
-    if (doesCourseOverlap(updatedCourse, existingCourses)) {
+    if (isCourseOverlapped(updatedCourse, existingCourses)) {
       Alert.alert('Invalid input', 'This course overlaps with another course.');
       return;
     }
