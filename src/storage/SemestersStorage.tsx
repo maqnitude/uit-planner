@@ -17,25 +17,27 @@ async function getSemestersFromStorage(): Promise<Semester[] | undefined> {
   }
 
   const result = await AsyncStorage.getItem(SEMESTERS_KEY);
-  return result !== null ? JSON.parse(result) : [];
+  return result !== null ? JSON.parse(result) : undefined;
 }
 
 export const storeSemester = async (semester: Semester) => {
   try {
-    cachedSemesters = await getSemestersFromStorage();
-    cachedSemesters?.push(semester);
-    await AsyncStorage.setItem(SEMESTERS_KEY, JSON.stringify(cachedSemesters));
+    const semesters = await getSemestersFromStorage() || [];
+    semesters.push(semester);
+    await storeSemestersToStorage(semesters);
   } catch (error) {
     console.error('Error storing semester:', error);
     throw error;
   }
 };
 
-export const getAllSemesters = async (): Promise<Semester[] | undefined> => {
+export const storeSemesters = async (newSemesters: Semester[]) => {
   try {
-    return await getSemestersFromStorage();
+    const semesters = await getSemestersFromStorage() || [];
+    semesters.push(...newSemesters);
+    await storeSemestersToStorage(semesters);
   } catch (error) {
-    console.error('Error fetching semesters:', error);
+    console.error('Error storing semesters:', error);
     throw error;
   }
 };
@@ -50,16 +52,34 @@ export const getSemester = async (id: string): Promise<Semester | undefined> => 
   }
 };
 
+export const getAllSemesters = async (): Promise<Semester[] | undefined> => {
+  try {
+    return await getSemestersFromStorage();
+  } catch (error) {
+    console.error('Error fetching semesters:', error);
+    throw error;
+  }
+};
+
 export const removeSemester = async (id: string) => {
   try {
-    cachedSemesters = await getSemestersFromStorage();
-    cachedSemesters = cachedSemesters?.filter(semester => semester.id !== id);
-    await AsyncStorage.setItem(SEMESTERS_KEY, JSON.stringify(cachedSemesters));
+    let semesters = await getSemestersFromStorage() || [];
+    semesters = semesters.filter(semester => semester.id !== id);
   } catch (error) {
     console.error('Error removing semester:', error);
     throw error;
   }
 };
+
+export const removeAllSemesters = async () => {
+  try {
+    cachedSemesters = [];
+    await AsyncStorage.removeItem(SEMESTERS_KEY);
+  } catch (error) {
+    console.error('Error removing all semesters:', error);
+    throw error;
+  }
+}
 
 export const updateSemester = async (updatedSemester: Semester) => {
   try {
