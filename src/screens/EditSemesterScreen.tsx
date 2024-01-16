@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, Alert } from 'react-native';
 import 'react-native-get-random-values';
-import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
 
 import { Semester } from '../types';
@@ -11,10 +10,11 @@ import { DatePickerMode } from '../components/FormTemplate';
 
 interface EditSemesterScreenProps {
   navigation: any,
+  route: any,
 }
 
-const EditSemesterScreen: React.FC<EditSemesterScreenProps> = ({ route, navigation }) => {
-    const { semester } = route.params;
+const EditSemesterScreen: React.FC<EditSemesterScreenProps> = ({ navigation, route }) => {
+  const { semester } = route.params;
   const [name, setName] = useState(semester.name);
   const [start, setStart] = useState(new Date(semester.start));
   const [end, setEnd] = useState(new Date(semester.end));
@@ -44,7 +44,7 @@ const EditSemesterScreen: React.FC<EditSemesterScreenProps> = ({ route, navigati
 
   const isSemesterOverlapped = (updatedSemester: Semester, existingSemesters: Semester[]): boolean => {
     for (let existingSemester of existingSemesters) {
-        if (existingSemester.id != updatedSemester.id){
+        if (existingSemester.id !== updatedSemester.id){
             const SemesterDuration = existingSemester;
             const newSemesterStartTime = moment(updatedSemester.start).format('MM:DD:YYYY');
             const newSemesterEndTime = moment(updatedSemester.end).format('MM:DD:YYYY');

@@ -76,9 +76,8 @@ const SemesterScreen: React.FC<SemesterScreenProps> = ({ navigation }) => {
               <TouchableOpacity onPress={() => handleItemPress(item)}>
                 <View>
                   <Text style={styles.itemTitle}>{item.name}</Text>
-                  <Text style={styles.itemTitle}>Start: {moment(item.start).format('MM-DD-YYYY')}</Text>
-                  <Text style={styles.itemTitle}>End: {moment(item.end).format('MM-DD-YYYY')}</Text>
-                  <Text style={styles.itemTitle}>Credits: </Text>
+                  <Text>Start: {moment(item.start).format('DD-MM-YYYY')}</Text>
+                  <Text>End: {moment(item.end).format('DD-MM-YYYY')}</Text>
                 </View>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => handleDeletePress(item)}>
