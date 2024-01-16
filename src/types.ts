@@ -16,6 +16,7 @@ export interface ClassPeriod {
 
 export interface Semester {
   id: string;
+  name: string;
   start: Date;
   end: Date;
 }
