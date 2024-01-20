@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import moment from 'moment';
 
 import { getCourse } from '../storage/CoursesStorage';
 import { getTasksByCourseId } from '../storage/TasksStorage';
@@ -38,9 +39,9 @@ const CourseDetailsScreen: React.FC<CourseDetailsScreenProps> = ({ navigation, r
         <ScrollView>
           {tasks.map((task, index) => (
             <View key={index}>
-              <Text>{task.name}</Text>
-              <Text>{task.type}</Text>
-              <Text>{task.dueDate.toString()}</Text>
+              <Text style={styles.boldText}>{task.name}</Text>
+              <Text>@{task.type}</Text>
+              <Text>Due: {moment(task.dueDate).format('HH:mm:ss DD/MM/YYYY')}</Text>
             </View>
           ))}
         </ScrollView>
@@ -78,6 +79,9 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 20,
     height: '60%',
+  },
+  boldText: {
+    fontWeight: 'bold',
   },
 });
 

@@ -4,8 +4,10 @@ import { useFocusEffect } from '@react-navigation/native';
 import 'react-native-get-random-values';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
+
 import { Task } from '../types';
 import { getAllTasks, removeTask } from '../storage/TasksStorage';
+import { deleteTask } from '../utils/TaskManager';
 
 interface TasksScreenProps {
   navigation: any;
@@ -53,7 +55,8 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
         {
           text: 'OK',
           onPress: async () => {
-            await removeTask(item.id);
+            // await removeTask(item.id);
+            await deleteTask(item);
             fetchTasks();
           },
         },
@@ -75,7 +78,7 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
               <TouchableOpacity onPress={() => handleItemPress(item)}>
                 <View>
                   <Text style={styles.itemTitle}>{item.name}</Text>
-                  <Text style={styles.itemDue}>Due: {moment(item.dueDate).format('DD MM YYYY hh:mm:ss')}</Text>
+                  <Text style={styles.itemDue}>Due: {moment(item.dueDate).format('HH:mm:ss DD/MM/YYYY')}</Text>
                 </View>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => handleDeletePress(item)}>

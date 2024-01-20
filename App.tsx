@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
+import notifee, { AndroidImportance } from '@notifee/react-native';
 
 import CoursesScreen from './src/screens/CoursesScreen';
 import AddCourseScreen from './src/screens/AddCourseScreen';
@@ -20,6 +21,14 @@ import EditSemesterScreen from './src/screens/EditSemesterScreen';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  useEffect(() => {
+    notifee.createChannel({
+      id: 'task-channel',
+      name: 'Task Notifications',
+      importance: AndroidImportance.HIGH,
+    });
+  }, []);
+
   return (
     <NavigationContainer>
       <Stack.Navigator
