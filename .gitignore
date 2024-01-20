@@ -67,3 +67,6 @@ yarn-error.log
 
 # prettier ignore file
 .prettierignore
+
+# vscode settings
+.vscode
