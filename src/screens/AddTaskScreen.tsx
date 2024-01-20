@@ -7,6 +7,7 @@ import moment from 'moment';
 import { Task } from '../types';
 import FormTemplate from '../components/FormTemplate';
 import { storeTask } from '../storage/TasksStorage';
+import { createTask } from '../utils/TaskManager';
 import { DatePickerMode } from '../components/FormTemplate';
 
 interface AddTaskScreenProps {
@@ -81,18 +82,20 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
       completed: false,
     };
 
-    await storeTask(newTask);
+    // await storeTask(newTask);
+    await createTask(newTask);
 
     resetState();
 
-    Alert.alert(
-      'Success',
-      'Task was added successfully',
-      [
-        { text: 'OK', onPress: () => navigation.goBack() },
-
-      ]
-    );
+    setTimeout(() => {
+      Alert.alert(
+        'Success',
+        'Task was added successfully',
+        [
+          { text: 'OK', onPress: () => navigation.goBack() },
+        ]
+      );
+    }, 10); // delay of 10ms
   };
 
   return (
