@@ -78,7 +78,7 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
               <TouchableOpacity onPress={() => handleItemPress(item)}>
                 <View>
                   <Text style={styles.itemTitle}>{item.name}</Text>
-                  <Text style={styles.itemDue}>Due: {moment(item.dueDate).format('DD MM YYYY hh:mm:ss')}</Text>
+                  <Text style={styles.itemDue}>Due: {moment(item.dueDate).format('HH:mm:ss DD/MM/YYYY')}</Text>
                 </View>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => handleDeletePress(item)}>
