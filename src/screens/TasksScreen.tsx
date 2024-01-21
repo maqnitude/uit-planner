@@ -8,6 +8,8 @@ import moment from 'moment';
 import { Task } from '../types';
 import { getAllTasks, removeTask } from '../storage/TasksStorage';
 import { deleteTask } from '../utils/TaskManager';
+import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
+import { getAllCourses } from '../storage/CoursesStorage';
 
 interface TasksScreenProps {
   navigation: any;
@@ -15,29 +17,35 @@ interface TasksScreenProps {
 
 const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const { currentSemesterId } = useCurrentSemester();
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      fetchTasks();
-    }, [])
-  );
-
-  const fetchTasks = async () => {
+  const fetchTasks = React.useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
     try {
+      // get tasks by semester id
       const fetchedTasks = await getAllTasks();
-      setTasks(fetchedTasks ?? []);
+      const courses = await getAllCourses();
+      const currentSemesterCourseIds = courses?.filter(course => course.semesterId === currentSemesterId).map(course => course.id) ?? [];
+      const currentSemesterTasks = fetchedTasks?.filter(task => currentSemesterCourseIds.includes(task.courseId)) ?? [];
+
+      setTasks(currentSemesterTasks);
     } catch (err) {
       setError((err as Error).message);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentSemesterId]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchTasks();
+    }, [fetchTasks])
+  );
 
   const handleItemPress = (item: Task) => {
     navigation.navigate('Task Details', { item });

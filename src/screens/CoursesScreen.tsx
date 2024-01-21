@@ -5,8 +5,8 @@ import 'react-native-get-random-values';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { Course } from '../types';
-import { getAllCourses, getCoursesBySemester, removeCourse } from '../storage/CoursesStorage';
-import { getAllSemesters } from '../storage/SemestersStorage';
+import { getAllCourses, removeCourse } from '../storage/CoursesStorage';
+import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
 
 interface CoursesScreenProps {
   navigation: any;
@@ -14,36 +14,33 @@ interface CoursesScreenProps {
 
 const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
   const [courses, setCourses] = useState<Course[]>([]);
+  const { currentSemesterId } = useCurrentSemester();
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      fetchCourses();
-    }, [])
-  );
-
-  const fetchCourses = async () => {
+  const fetchCourses = React.useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const semesters = await getAllSemesters();
-      let fetchedCourses: Course[] | undefined;
-      if (semesters !== undefined && semesters.length > 0) {
-        fetchedCourses = await getCoursesBySemester(semesters[0].id)
-      } else {
-        fetchedCourses = await getAllCourses();
-      }
-      // const fetchedCourses = await getAllCourses();
-      setCourses(fetchedCourses ?? []);
+      // get courses by semester id
+      const fetchedCourses = await getAllCourses();
+      const currentSemesterCourses = fetchedCourses?.filter(course => course.semesterId === currentSemesterId) ?? [];
+
+      setCourses(currentSemesterCourses);
     } catch (err) {
       setError((err as Error).message);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentSemesterId]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchCourses();
+    }, [fetchCourses])
+  );
 
   const handleItemPress = (item: Course) => {
     navigation.navigate('Course Details', { item });
