@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Button, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Button, ScrollView, TouchableOpacity } from 'react-native';
 import ProgressBar from 'react-native-progress/Bar';
 import { useFocusEffect } from '@react-navigation/native';
 import moment from 'moment';
@@ -101,11 +101,11 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           <View style={styles.wrapper}>
             <ScrollView>
               {coursesForToday.map((course, index) => (
-                <View key={index} style={styles.courseContainer}>
+                <TouchableOpacity key={index} style={styles.courseContainer} onPress={() => navigation.navigate('Course Details', { item: course })}>
                   <Text style={styles.boldText}>{course.name} ({course.code})</Text>
                   <Text>Location: {course.location}</Text>
                   <Text>{moment(course.schedule[0].startTime).format('HH:mm')} - {moment(course.schedule[0].endTime).format('HH:mm')}</Text>
-                </View>
+                </TouchableOpacity>
               ))}
             </ScrollView>
           </View>
@@ -131,11 +131,11 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           <View style={styles.wrapper}>
             <ScrollView>
               {upcomingTasks.map((task, index) => (
-                <View key={index} style={styles.taskContainer}>
+                <TouchableOpacity key={index} style={styles.taskContainer} onPress={() => navigation.navigate('Task Details', { item: task })}>
                   <Text style={styles.boldText}>{task.name}</Text>
                   <Text>{task.type}</Text>
                   <Text>{moment(task.dueDate).format('HH:mm:ss DD/MM/YYYY')}</Text>
-                </View>
+                </TouchableOpacity>
               ))}
             </ScrollView>
           </View>
@@ -200,10 +200,16 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   taskContainer: {
-    marginBottom: 10,
+    marginVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: 'gray',
+    borderStyle: 'dashed',
   },
   courseContainer: {
-    marginBottom: 10,
+    marginVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: 'gray',
+    borderStyle: 'dashed',
   },
   errorText: {
     color: 'red',
