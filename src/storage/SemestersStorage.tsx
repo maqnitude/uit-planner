@@ -65,6 +65,7 @@ export const removeSemester = async (id: string) => {
   try {
     let semesters = await getSemestersFromStorage() || [];
     semesters = semesters.filter(semester => semester.id !== id);
+    await storeSemestersToStorage(semesters);
   } catch (error) {
     console.error('Error removing semester:', error);
     throw error;
