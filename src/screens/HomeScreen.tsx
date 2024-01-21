@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Button, ScrollView, TouchableOpacity } from 'react-native';
 import ProgressBar from 'react-native-progress/Bar';
 import { useFocusEffect } from '@react-navigation/native';
@@ -79,11 +79,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     }
   }, [currentSemesterId]);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      fetchData();
-    }, [])
-  );
+  useEffect(() => {
+    fetchData();
+  }, [currentSemesterId]);
 
   const currentDayOfWeek = moment().format('dddd');
   const coursesForToday = courses.filter(course => course.schedule[0].day === currentDayOfWeek);
@@ -153,9 +151,12 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       );
     }
   };
-
-  const semesterStartDate = moment(semester.start);
-  const semesterEndDate = moment(semester.end);
+  let semesterStartDate = moment('2024-01-01');
+  let semesterEndDate = moment('2024-12-31');
+  if(semester){
+    semesterStartDate = moment(semester.start);
+    semesterEndDate = moment(semester.end);
+  }
   const currentDate = moment();
 
   const semesterProgressPercent = currentDate.diff(semesterStartDate) / semesterEndDate.diff(semesterStartDate) * 100;
