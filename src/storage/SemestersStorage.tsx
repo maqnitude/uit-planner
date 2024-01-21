@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Semester } from '../types';
+import { removeAllCourses, removeCoursesBySemester } from './CoursesStorage';
 
 const SEMESTERS_KEY = 'semesters';
 
@@ -9,7 +10,7 @@ let cachedSemesters: Semester[] | undefined;
 async function storeSemestersToStorage(semesters: Semester[]) {
   cachedSemesters = semesters;
   await AsyncStorage.setItem(SEMESTERS_KEY, JSON.stringify(semesters));
-}
+};
 
 async function getSemestersFromStorage(): Promise<Semester[] | undefined> {
   if (cachedSemesters !== undefined) {
@@ -18,7 +19,7 @@ async function getSemestersFromStorage(): Promise<Semester[] | undefined> {
 
   const result = await AsyncStorage.getItem(SEMESTERS_KEY);
   return result !== null ? JSON.parse(result) : undefined;
-}
+};
 
 export const storeSemester = async (semester: Semester) => {
   try {
@@ -61,20 +62,29 @@ export const getAllSemesters = async (): Promise<Semester[] | undefined> => {
   }
 };
 
-export const removeSemester = async (id: string) => {
+export const removeSemester = async (id: string, cascade: boolean = true) => {
   try {
     let semesters = await getSemestersFromStorage() || [];
     semesters = semesters.filter(semester => semester.id !== id);
+    await storeSemestersToStorage(semesters);
+
+    if (cascade) {
+      await removeCoursesBySemester(id);
+    }
   } catch (error) {
     console.error('Error removing semester:', error);
     throw error;
   }
 };
 
-export const removeAllSemesters = async () => {
+export const removeAllSemesters = async (cascade: boolean = true) => {
   try {
     cachedSemesters = [];
     await AsyncStorage.removeItem(SEMESTERS_KEY);
+
+    if (cascade) {
+      await removeAllCourses();
+    }
   } catch (error) {
     console.error('Error removing all semesters:', error);
     throw error;

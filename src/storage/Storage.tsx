@@ -67,7 +67,7 @@ export const populateStorage = async () => {
 };
 
 export const clearStorage = async () => {
-  await removeAllSemesters();
+  await removeAllSemesters(false);
+  await removeAllCourses(false);
   await removeAllTasks();
-  await removeAllCourses();
 };

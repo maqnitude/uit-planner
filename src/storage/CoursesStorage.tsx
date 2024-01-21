@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Course } from '../types';
+import { removeAllTasks, removeTasksByCourse, removeTasksByCourses } from './TasksStorage';
 
 const COURSES_KEY = 'courses';
 
@@ -52,6 +53,16 @@ export const getCourse = async (id: string): Promise<Course | undefined> => {
   }
 };
 
+export const getCoursesBySemester = async (semesterId: string): Promise<Course[] | undefined> => {
+  try {
+    const courses = await getCoursesFromStorage();
+    return courses?.filter(course => course.semesterId === semesterId);
+  } catch (error) {
+    console.error('Error fetching courses by semester:', error);
+    throw error;
+  }
+};
+
 export const getAllCourses = async (): Promise<Course[] | undefined> => {
   try {
     return await getCoursesFromStorage();
@@ -61,21 +72,64 @@ export const getAllCourses = async (): Promise<Course[] | undefined> => {
   }
 };
 
-export const removeCourse = async (id: string) => {
+export const removeCourse = async (id: string, cascade: boolean = true) => {
   try {
     let courses = await getCoursesFromStorage() || [];
     courses = courses.filter(course => course.id !== id);
     await storeCoursesToStorage(courses);
+
+    if (cascade) {
+      await removeTasksByCourse(id);
+    }
   } catch (error) {
     console.error('Error removing course:', error);
     throw error;
   }
 };
 
-export const removeAllCourses = async () => {
+export const removeCourses = async (ids: string[], cascade: boolean = true) => {
+  try {
+    const courses = await getCoursesFromStorage() || [];
+    let idSet = new Set(ids);
+    const coursesToDelete = courses.filter(course => idSet.has(course.id));
+    const newCourses = courses.filter(course => !idSet.has(course.id));
+    await storeCoursesToStorage(newCourses);
+
+    if (cascade) {
+      const courseIds = coursesToDelete.map(course => course.id);
+      await removeTasksByCourses(courseIds);
+    }
+  } catch (error) {
+    console.error('Error removing courses:', error);
+    throw error;
+  }
+};
+
+export const removeCoursesBySemester = async (semesterId: string, cascade: boolean = true) => {
+  try {
+    const courses = await getCoursesFromStorage() || [];
+    const coursesToDelete = courses.filter(course => course.semesterId === semesterId);
+    const newCourses = courses.filter(course => course.semesterId !== semesterId);
+    await storeCoursesToStorage(newCourses);
+
+    if (cascade) {
+      const courseIds = coursesToDelete.map(course => course.id);
+      await removeTasksByCourses(courseIds);
+    }
+  } catch (error) {
+    console.error('Error removing courses by semester:', error);
+    throw error;
+  }
+};
+
+export const removeAllCourses = async (cascade: boolean = true) => {
   try {
     cachedCourses = [];
     await AsyncStorage.removeItem(COURSES_KEY);
+
+    if (cascade) {
+      await removeAllTasks();
+    }
   } catch (error) {
     console.error('Error removing all courses:', error);
     throw error;

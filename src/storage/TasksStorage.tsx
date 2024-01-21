@@ -61,23 +61,46 @@ export const getAllTasks = async (): Promise<Task[] | undefined> => {
   }
 };
 
-export const getTasksByCourseId = async (courseId: string): Promise<Task[]> => {
+export const getTasksByCourse = async (courseId: string): Promise<Task[] | undefined> => {
   try {
     const tasks = await getTasksFromStorage();
-    return tasks ? tasks.filter(task => task.courseId === courseId) : [];
+    return tasks?.filter(task => task.courseId === courseId);
   } catch (error) {
-    console.error('Error fetching tasks by course ID:', error);
+    console.error('Error fetching tasks by courseId:', error);
     throw error;
   }
 };
 
 export const removeTask = async (id: string) => {
   try {
-    cachedTasks = await getTasksFromStorage();
-    cachedTasks = cachedTasks?.filter(task => task.id !== id);
-    await AsyncStorage.setItem(TASKS_KEY, JSON.stringify(cachedTasks));
+    let tasks = await getTasksFromStorage() || [];
+    tasks = tasks.filter(task => task.id !== id);
+    await storeTasksToStorage(tasks);
   } catch (error) {
     console.error('Error removing task:', error);
+    throw error;
+  }
+};
+
+export const removeTasksByCourse = async (courseId: string) => {
+  try {
+    let tasks = await getTasksFromStorage() || [];
+    tasks = tasks.filter(task => task.courseId !== courseId);
+    await storeTasksToStorage(tasks);
+  } catch (error) {
+    console.error('Error removing tasks by course:', error);
+    throw error;
+  }
+};
+
+export const removeTasksByCourses = async (courseIds: string[]) => {
+  try {
+    let tasks = await getTasksFromStorage() || [];
+    const courseIdSet = new Set(courseIds);
+    tasks = tasks.filter(task => !courseIdSet.has(task.courseId));
+    await storeTasksToStorage(tasks);
+  } catch (error) {
+    console.error('Error removing tasks:', error);
     throw error;
   }
 };
