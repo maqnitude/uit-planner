@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { Course } from '../types';
 import { getAllCourses, removeCourse } from '../storage/CoursesStorage';
+import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
 
 interface CoursesScreenProps {
   navigation: any;
@@ -13,29 +14,33 @@ interface CoursesScreenProps {
 
 const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
   const [courses, setCourses] = useState<Course[]>([]);
+  const { currentSemesterId } = useCurrentSemester();
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      fetchCourses();
-    }, [])
-  );
-
-  const fetchCourses = async () => {
+  const fetchCourses = React.useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
     try {
+      // get courses by semester id
       const fetchedCourses = await getAllCourses();
-      setCourses(fetchedCourses ?? []);
+      const currentSemesterCourses = fetchedCourses?.filter(course => course.semesterId === currentSemesterId) ?? [];
+
+      setCourses(currentSemesterCourses);
     } catch (err) {
       setError((err as Error).message);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentSemesterId]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchCourses();
+    }, [fetchCourses])
+  );
 
   const handleItemPress = (item: Course) => {
     navigation.navigate('Course Details', { item });

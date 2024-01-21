@@ -8,6 +8,7 @@ import { ClassPeriod, Course } from '../types';
 import FormTemplate from '../components/FormTemplate';
 import { getAllCourses, storeCourse } from '../storage/CoursesStorage';
 import { DatePickerMode } from '../components/FormTemplate';
+import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
 
 interface AddCourseScreenProps {
   navigation: any,
@@ -15,6 +16,8 @@ interface AddCourseScreenProps {
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 const AddCourseScreen: React.FC<AddCourseScreenProps> = ({ navigation }) => {
+  const { currentSemesterId } = useCurrentSemester();
+
   const [name, setName] = useState('');
   const [code, setCode] = useState('');
   const [credits, setCredits] = useState('');
@@ -138,18 +141,26 @@ const AddCourseScreen: React.FC<AddCourseScreenProps> = ({ navigation }) => {
       return;
     }
 
+    if (currentSemesterId === null) {
+      Alert.alert('No semester selected', 'Please select a semester before adding a course.');
+      return;
+    }
+
     const newCourse: Course = {
       id: uuidv4(),
       name,
       code,
       credits: parseInt(credits, 10),
       location,
+      semesterId: currentSemesterId,
       schedule: [{ day, startTime, endTime } as ClassPeriod],
     };
 
-    const existingCourses = await getAllCourses() || [];
-    if (isCourseOverlapped(newCourse, existingCourses)) {
-      Alert.alert('Invalid input', 'This course overlaps with another course.');
+    // get courses by semester id
+    const courses = await getAllCourses() || [];
+    const currentSemesterCourses = courses.filter(course => course.semesterId === currentSemesterId);
+    if (isCourseOverlapped(newCourse, currentSemesterCourses)) {
+      Alert.alert('Invalid input', 'This course overlaps with another course in the current semester.');
       return;
     }
 

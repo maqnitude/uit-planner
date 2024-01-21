@@ -6,6 +6,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import CourseBlock from '../components/CourseBlock';
 import { Course } from '../types';
 import { getAllCourses } from '../storage/CoursesStorage';
+import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const TIME_STAMPS = ['7:30', '8:15', '9:00', '10:00', '10:45', '11:30', '13:00', '13:45', '14:30', '15:30', '16:15', '17:00'];
@@ -21,29 +22,33 @@ const TIMES = TIME_STAMPS.map(time => moment(time, 'HH:mm'));
 
 const TimeTable = () => {
   const [courses, setCourses] = useState<Course[]>([]);
+  const { currentSemesterId } = useCurrentSemester();
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      fetchCourses();
-    }, [])
-  );
-
-  const fetchCourses = async () => {
+  const fetchCourses = React.useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
     try {
+      // get courses by semester id
       const fetchedCourses = await getAllCourses();
-      setCourses(fetchedCourses ?? []);
+      const currentCourses = fetchedCourses?.filter(course => course.semesterId === currentSemesterId) ?? [];
+
+      setCourses(currentCourses);
     } catch (err) {
       setError((err as Error).message);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentSemesterId]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchCourses();
+    }, [fetchCourses])
+  );
 
   const screenWidth = Dimensions.get('window').width;
   const timeStampWidth = 50;

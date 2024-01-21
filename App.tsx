@@ -18,6 +18,8 @@ import SemesterScreen from './src/screens/SemestersScreen';
 import AddSemesterScreen from './src/screens/AddSemesterScreen';
 import SemesterDetailsScreen from './src/screens/SemesterDetailsScreen';
 import EditSemesterScreen from './src/screens/EditSemesterScreen';
+import { CurrentSemesterProvider } from './src/hooks/CurrentSemesterContext';
+
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -30,41 +32,43 @@ export default function App() {
   }, []);
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: '#1e90ff',
-          },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-          headerTitleAlign: 'center',
-        }}>
-        <Stack.Screen
-          name="Bottom Tabs"
-          component={BottomTabs}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Semesters" component={SemesterScreen} />
-        <Stack.Screen name="Add Semester" component={AddSemesterScreen} />
-        <Stack.Screen name="Semester Details" component={SemesterDetailsScreen} />
-        <Stack.Screen name="Edit Semester" component={EditSemesterScreen} />
-        <Stack.Screen name="Courses" component={CoursesScreen} />
-        <Stack.Screen name="Add Course" component={AddCourseScreen} />
-        <Stack.Screen name="Course Details" component={CourseDetailsScreen} />
-        <Stack.Screen name="Edit Course" component={EditCourseScreen} />
-        <Stack.Screen name="Timetable" component={TimeTable} />
-        <Stack.Screen name="Tasks" component={TasksScreen} />
-        <Stack.Screen name="Add Task" component={AddTaskScreen} />
-        <Stack.Screen name="Task Details" component={TaskDetailsScreen} />
-        {__DEV__ && (
-          <Stack.Screen name="Dev Menu" component={DevMenuScreen} />
-        )}
-        {/* Other screens */}
-      </Stack.Navigator>
-    </NavigationContainer>
+    <CurrentSemesterProvider>
+      <NavigationContainer>
+        <Stack.Navigator
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: '#1e90ff',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+            headerTitleAlign: 'center',
+          }}>
+          <Stack.Screen
+            name="Bottom Tabs"
+            component={BottomTabs}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Semesters" component={SemesterScreen} />
+          <Stack.Screen name="Add Semester" component={AddSemesterScreen} />
+          <Stack.Screen name="Semester Details" component={SemesterDetailsScreen} />
+          <Stack.Screen name="Edit Semester" component={EditSemesterScreen} />
+          <Stack.Screen name="Courses" component={CoursesScreen} />
+          <Stack.Screen name="Add Course" component={AddCourseScreen} />
+          <Stack.Screen name="Course Details" component={CourseDetailsScreen} />
+          <Stack.Screen name="Edit Course" component={EditCourseScreen} />
+          <Stack.Screen name="Timetable" component={TimeTable} />
+          <Stack.Screen name="Tasks" component={TasksScreen} />
+          <Stack.Screen name="Add Task" component={AddTaskScreen} />
+          <Stack.Screen name="Task Details" component={TaskDetailsScreen} />
+          {__DEV__ && (
+            <Stack.Screen name="Dev Menu" component={DevMenuScreen} />
+          )}
+          {/* Other screens */}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </CurrentSemesterProvider>
   );
 }
