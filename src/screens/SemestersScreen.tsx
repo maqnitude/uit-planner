@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import CheckBox from '@react-native-community/checkbox';
 import { useFocusEffect } from '@react-navigation/native';
 import 'react-native-get-random-values';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { Semester } from '../types';
 import { getAllSemesters, removeSemester } from '../storage/SemestersStorage';
+import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
 import moment from 'moment';
 
 interface SemesterScreenProps {
@@ -14,6 +16,7 @@ interface SemesterScreenProps {
 
 const SemesterScreen: React.FC<SemesterScreenProps> = ({ navigation }) => {
   const [semesters, setSemesters] = useState<Semester[]>([]);
+  const { currentSemesterId, setCurrentSemesterId } = useCurrentSemester();
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,6 +43,10 @@ const SemesterScreen: React.FC<SemesterScreenProps> = ({ navigation }) => {
 
   const handleItemPress = (item: Semester) => {
     navigation.navigate('Semester Details', { item });
+  };
+
+  const handleCheckboxPress = (semesterId: string) => {
+    setCurrentSemesterId(semesterId);
   };
 
   const handleDeletePress = async (item: Semester) => {
@@ -73,13 +80,16 @@ const SemesterScreen: React.FC<SemesterScreenProps> = ({ navigation }) => {
           data={semesters}
           renderItem={({ item }) => (
             <View style={styles.itemBlock}>
-              <TouchableOpacity onPress={() => handleItemPress(item)}>
-                <View>
-                  <Text style={styles.itemTitle}>{item.name}</Text>
-                  <Text>Start: {moment(item.start).format('DD-MM-YYYY')}</Text>
-                  <Text>End: {moment(item.end).format('DD-MM-YYYY')}</Text>
-                </View>
-              </TouchableOpacity>
+              <View style={styles.checkboxContainer}>
+                <CheckBox value={item.id === currentSemesterId} onValueChange={() => handleCheckboxPress(item.id)} />
+                <TouchableOpacity style={styles.details} onPress={() => handleItemPress(item)}>
+                  <View>
+                    <Text style={styles.itemTitle}>{item.name}</Text>
+                    <Text>Start: {moment(item.start).format('DD-MM-YYYY')}</Text>
+                    <Text>End: {moment(item.end).format('DD-MM-YYYY')}</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
               <TouchableOpacity onPress={() => handleDeletePress(item)}>
                 <Icon name="delete" size={25} />
               </TouchableOpacity>
@@ -115,6 +125,13 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginHorizontal: 20,
     padding: 10,
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  details: {
+    marginLeft: 10,
   },
   itemTitle: {
     fontSize: 20,
