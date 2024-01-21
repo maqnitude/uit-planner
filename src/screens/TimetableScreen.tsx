@@ -65,47 +65,49 @@ const TimeTable = () => {
   });
 
   return (
-    <View style={styles.container}>
+    <>
       {isLoading && <Text>Loading timetable...</Text>}
       {error && <Text style={styles.errorText}>Error loading timetable: {error}</Text>}
-      <ScrollView>
-        <View style={styles.row}>
-          <View style={{ marginBottom: unitHeight, marginTop: headerHeight }}>
-            {TIME_STAMPS.map((time, index) => (
-              <View key={index} style={[styles.timeStamp, {width: timeStampWidth, height: heights[index], borderTopWidth: index === 0 ? 0.5 : 0}]}>
-                <Text style={styles.boldText}>{time}</Text>
-              </View>
-            ))}
-          </View>
-          <ScrollView horizontal>
-            <View style={styles.row}>
-              {DAYS.map((day, dayIndex) => (
-                <View key={dayIndex} style={{ width: (screenWidth - timeStampWidth) / 3 }}>
-                  <Text style={[styles.header, styles.boldText, {height: headerHeight}]}>{day}</Text>
-                  {TIMES.map((time, timeIndex) => {
-                    return <View key={timeIndex} style={[styles.timeSlot, {height: heights[timeIndex]}]}>
-                      {courses.map((course, courseIndex) => {
-                        const courseStartTime = moment(course.schedule[0].startTime).format('HH:mm');
-                        const courseEndTime = moment(course.schedule[0].endTime).format('HH:mm');
-                        const timeSlotEnd = TIMES[timeIndex + 1] ? moment(TIMES[timeIndex + 1]).format('HH:mm') : moment(time).add(45, 'minutes').format('HH:mm');
-                        if (courseStartTime >= time.format('HH:mm') && courseStartTime < timeSlotEnd && course.schedule[0].day === day) {
-                          const courseDurationMinutes = moment.duration(moment(courseEndTime, 'HH:mm').diff(moment(courseStartTime, 'HH:mm'))).asMinutes();
-                          const blockHeight = courseDurationMinutes * unitHeight / 45;
-                          const offsetMinutes = moment.duration(moment(courseStartTime, 'HH:mm').diff(moment(time, 'HH:mm'))).asMinutes();
-                          const offset = offsetMinutes * unitHeight / 45;
-                          return <CourseBlock key={courseIndex} course={course} color={DAY_COLORS[day]} height={blockHeight} offset={offset} />;
-                        }
-                        return null;
-                      })}
-                    </View>;
-                  })}
+      <View style={styles.container}>
+        <ScrollView>
+          <View style={styles.row}>
+            <View style={{ marginBottom: unitHeight, marginTop: headerHeight }}>
+              {TIME_STAMPS.map((time, index) => (
+                <View key={index} style={[styles.timeStamp, {width: timeStampWidth, height: heights[index], borderTopWidth: index === 0 ? 0.5 : 0}]}>
+                  <Text style={styles.boldText}>{time}</Text>
                 </View>
               ))}
             </View>
-          </ScrollView>
-        </View>
-      </ScrollView>
-    </View>
+            <ScrollView horizontal>
+              <View style={styles.row}>
+                {DAYS.map((day, dayIndex) => (
+                  <View key={dayIndex} style={{ width: (screenWidth - timeStampWidth) / 3 }}>
+                    <Text style={[styles.header, styles.boldText, {height: headerHeight}]}>{day}</Text>
+                    {TIMES.map((time, timeIndex) => {
+                      return <View key={timeIndex} style={[styles.timeSlot, {height: heights[timeIndex]}]}>
+                        {courses.map((course, courseIndex) => {
+                          const courseStartTime = moment(course.schedule[0].startTime).format('HH:mm');
+                          const courseEndTime = moment(course.schedule[0].endTime).format('HH:mm');
+                          const timeSlotEnd = TIMES[timeIndex + 1] ? moment(TIMES[timeIndex + 1]).format('HH:mm') : moment(time).add(45, 'minutes').format('HH:mm');
+                          if (courseStartTime >= time.format('HH:mm') && courseStartTime < timeSlotEnd && course.schedule[0].day === day) {
+                            const courseDurationMinutes = moment.duration(moment(courseEndTime, 'HH:mm').diff(moment(courseStartTime, 'HH:mm'))).asMinutes();
+                            const blockHeight = courseDurationMinutes * unitHeight / 45;
+                            const offsetMinutes = moment.duration(moment(courseStartTime, 'HH:mm').diff(moment(time, 'HH:mm'))).asMinutes();
+                            const offset = offsetMinutes * unitHeight / 45;
+                            return <CourseBlock key={courseIndex} course={course} color={DAY_COLORS[day]} height={blockHeight} offset={offset} />;
+                          }
+                          return null;
+                        })}
+                      </View>;
+                    })}
+                  </View>
+                ))}
+              </View>
+            </ScrollView>
+          </View>
+        </ScrollView>
+      </View>
+    </>
   );
 };
 
