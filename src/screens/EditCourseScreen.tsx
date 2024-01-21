@@ -150,9 +150,11 @@ const EditCourseScreen: React.FC<EditCourseScreenProps> = ({ route, navigation }
       schedule: [{ day, startTime, endTime } as ClassPeriod],
     };
 
-    const existingCourses = await getAllCourses() || [];
-    if (isCourseOverlapped(updatedCourse, existingCourses)) {
-      Alert.alert('Invalid input', 'This course overlaps with another course.');
+    // get courses by semester id
+    const courses = await getAllCourses() || [];
+    const currentSemesterCourses = courses.filter(c => c.semesterId === course.semesterId);
+    if (isCourseOverlapped(updatedCourse, currentSemesterCourses)) {
+      Alert.alert('Invalid input', 'This course overlaps with another course in the current semester.');
       return;
     }
 
