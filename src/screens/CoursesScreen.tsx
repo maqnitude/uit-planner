@@ -5,7 +5,8 @@ import 'react-native-get-random-values';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { Course } from '../types';
-import { getAllCourses, removeCourse } from '../storage/CoursesStorage';
+import { getAllCourses, getCoursesBySemester, removeCourse } from '../storage/CoursesStorage';
+import { getAllSemesters } from '../storage/SemestersStorage';
 
 interface CoursesScreenProps {
   navigation: any;
@@ -28,7 +29,14 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
     setError(null);
 
     try {
-      const fetchedCourses = await getAllCourses();
+      const semesters = await getAllSemesters();
+      let fetchedCourses: Course[] | undefined;
+      if (semesters !== undefined && semesters.length > 0) {
+        fetchedCourses = await getCoursesBySemester(semesters[0].id)
+      } else {
+        fetchedCourses = await getAllCourses();
+      }
+      // const fetchedCourses = await getAllCourses();
       setCourses(fetchedCourses ?? []);
     } catch (err) {
       setError((err as Error).message);

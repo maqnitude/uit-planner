@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { Course } from '../types';
+import { Course, Semester } from '../types';
 
 const COURSES_KEY = 'courses';
 
@@ -51,6 +51,16 @@ export const getCourse = async (id: string): Promise<Course | undefined> => {
     throw error;
   }
 };
+
+export const getCoursesBySemester = async (semesterId: string): Promise<Course[] | undefined> => {
+  try {
+    const courses = await getCoursesFromStorage();
+    return courses?.filter(course => course.semesterId === semesterId);
+  } catch (error) {
+    console.error('Error fetching courses by semester:', error);
+    throw error;
+  }
+}
 
 export const getAllCourses = async (): Promise<Course[] | undefined> => {
   try {
