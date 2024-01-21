@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import 'react-native-get-random-values';
@@ -11,6 +11,8 @@ import { deleteTask } from '../utils/TaskManager';
 import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
 import { getAllCourses } from '../storage/CoursesStorage';
 
+import { SearchBar } from 'react-native-elements';
+
 interface TasksScreenProps {
   navigation: any;
 }
@@ -21,6 +23,9 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTasks, setSelectedTasks] = useState(null);
 
   const fetchTasks = React.useCallback(async () => {
     setIsLoading(true);
@@ -72,15 +77,35 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
     );
   };
 
+  const handleSearch = (tasks) => {
+    setSelectedTasks(tasks.filter(task => task.name.includes(searchQuery.trim())));
+  };
+
+  const handleClear = () => {
+    setSearchQuery('');
+  };
+
+  useEffect(() => {
+    setSearchQuery('');
+    setSelectedTasks(tasks);
+  }, [isLoading, error]);
+
   return (
     <View style={styles.container}>
       {isLoading && <Text>Loading tasks...</Text>}
       {error && <Text style={styles.errorText}>Error loading tasks: {error}</Text>}
-
+      <SearchBar
+        placeholder="Type Here..."
+        onChangeText={(text) => setSearchQuery(text)}
+        value={searchQuery}
+        onSubmitEditing={() => handleSearch(tasks)}
+        onClear={handleClear}
+        cancelButtonTitle="Cancel"
+      />
       {!isLoading && !error && (
         <FlatList
           contentContainerStyle={styles.listContent}
-          data={tasks}
+          data={selectedTasks}
           renderItem={({ item }) => (
             <View style={styles.itemBlock}>
               <TouchableOpacity onPress={() => handleItemPress(item)}>

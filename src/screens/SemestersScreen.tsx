@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import { useFocusEffect } from '@react-navigation/native';
@@ -9,6 +9,7 @@ import { Semester } from '../types';
 import { getAllSemesters, removeSemester } from '../storage/SemestersStorage';
 import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
 import moment from 'moment';
+import { SearchBar } from 'react-native-elements';
 
 interface SemesterScreenProps {
   navigation: any;
@@ -20,6 +21,9 @@ const SemesterScreen: React.FC<SemesterScreenProps> = ({ navigation }) => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedSemesters, setSelectedSemesters] = useState(null);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -69,15 +73,35 @@ const SemesterScreen: React.FC<SemesterScreenProps> = ({ navigation }) => {
     );
   };
 
+  const handleSearch = (semesters) => {
+    setSelectedSemesters(semesters.filter(semester => semester.name.includes(searchQuery.trim())));
+  };
+
+  const handleClear = () => {
+    setSearchQuery('');
+  };
+
+  useEffect(() => {
+    setSearchQuery('');
+    setSelectedSemesters(semesters);
+  }, [isLoading, error]);
+
   return (
     <View style={styles.container}>
       {isLoading && <Text>Loading semesters...</Text>}
       {error && <Text style={styles.errorText}>Error loading semesters: {error}</Text>}
-
+      <SearchBar
+        placeholder="Type Here..."
+        onChangeText={(text) => setSearchQuery(text)}
+        value={searchQuery}
+        onSubmitEditing={() => handleSearch(semesters)}
+        onClear={handleClear}
+        cancelButtonTitle="Cancel"
+      />
       {!isLoading && !error && (
         <FlatList
           contentContainerStyle={styles.listContent}
-          data={semesters}
+          data={selectedSemesters}
           renderItem={({ item }) => (
             <View style={styles.itemBlock}>
               <View style={styles.checkboxContainer}>

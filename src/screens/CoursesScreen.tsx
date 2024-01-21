@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import 'react-native-get-random-values';
@@ -7,6 +7,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Course } from '../types';
 import { getCoursesBySemester, removeCourse } from '../storage/CoursesStorage';
 import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
+import { SearchBar } from 'react-native-elements';
 
 interface CoursesScreenProps {
   navigation: any;
@@ -18,6 +19,9 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCourses, setSelectedCourses] = useState(null);
 
   const fetchCourses = React.useCallback(async () => {
     setIsLoading(true);
@@ -68,15 +72,35 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
     );
   };
 
+  const handleSearch = (courses) => {
+    setSelectedCourses(courses.filter(course => course.name.includes(searchQuery.trim())));
+  };
+
+  const handleClear = () => {
+    setSearchQuery('');
+  };
+
+  useEffect(() => {
+    setSearchQuery('');
+    setSelectedCourses(courses);
+  }, [isLoading, error]);
+
   return (
     <View style={styles.container}>
       {isLoading && <Text>Loading courses...</Text>}
       {error && <Text style={styles.errorText}>Error loading courses: {error}</Text>}
-
+      <SearchBar
+        placeholder="Type Here..."
+        onChangeText={(text) => setSearchQuery(text)}
+        value={searchQuery}
+        onSubmitEditing={() => handleSearch(courses)}
+        onClear={handleClear}
+        cancelButtonTitle="Cancel"
+      />
       {!isLoading && !error && (
         <FlatList
           contentContainerStyle={styles.listContent}
-          data={courses}
+          data={selectedCourses}
           renderItem={({ item }) => (
             <View style={styles.itemBlock}>
               <TouchableOpacity onPress={() => handleItemPress(item)}>
