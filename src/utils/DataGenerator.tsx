@@ -1,15 +1,17 @@
 import { v4 as uuidv4 } from 'uuid'
 import { Course, ClassPeriod, Task, Semester } from '../types'
 
-export const generateSemesters = (num_semesters: number = 1): Semester[] => {
+export const generateSemesters = (num_semesters: number = 2): Semester[] => {
   const semesters: Semester[] = [];
 
   for (let i = 0; i < num_semesters; i++) {
+    const start = new Date(2024, i * 4, 1);
+    const end = new Date(2023, i * 4 + 4, 0);
     const semester: Semester = {
       id: uuidv4(),
       name: `Semeter ${i}`,
-      start: new Date('2024-01-01'),
-      end: new Date('2024-05-01'),
+      start,
+      end,
     };
 
     semesters.push(semester);
@@ -47,7 +49,7 @@ export const generateCourses = (semesters: Semester[], num_courses: number = 6):
     for (let i = 0; i < num_courses; i++) {
       const course: Course = {
         id: uuidv4(),
-        name: `Course ${i}`,
+        name: `Course ${i} (${semester.name})`,
         code: `${courseCodePrefix[Math.floor(Math.random() * courseCodePrefix.length)]}${i}${i}${i}`,
         credits: courseCredits[Math.floor(Math.random() * courseCredits.length)],
         location: `${courseLocationPrefix[Math.floor(Math.random() * courseLocationPrefix.length)]}${i}${i}${i}`,
