@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Alert, Button, View, Text, StyleSheet } from 'react-native';
+import CheckBox from '@react-native-community/checkbox';
 import { useFocusEffect } from '@react-navigation/native';
 
-import { getTask } from '../storage/TasksStorage';
+import { getTask, updateTask } from '../storage/TasksStorage';
 import { deleteTask } from '../utils/TaskManager';
 import moment from 'moment';
 import { Task } from '../types';
@@ -26,6 +27,12 @@ const TaskDetailsScreen: React.FC<TaskDetailsScreenProps> = ({ navigation, route
     }, [task.id])
   );
 
+  const handleToggleComplete = async(item: Task, newValue: boolean) => {
+    const updatedTask = {...item, completed: newValue};
+    await updateTask(updatedTask);
+    setTaskDetails(updatedTask);
+  };
+
   const handleDeletePress = async(item: Task) => {
     Alert.alert(
       'Delete Task',
@@ -48,7 +55,14 @@ const TaskDetailsScreen: React.FC<TaskDetailsScreenProps> = ({ navigation, route
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Title: {taskDetails.name}</Text>
+      <View style={styles.titleContainer}>
+        <CheckBox
+          value={taskDetails.completed}
+          onValueChange={(newValue) => handleToggleComplete(taskDetails, newValue)}
+        />
+        <Text style={[styles.title, taskDetails.completed ? styles.completedTaskTitle : {}]}>{taskDetails.name}</Text>
+      </View>
+      <Text style={styles.detail}>Status: {taskDetails.completed ? 'Done' : 'Todo'}</Text>
       <Text style={styles.detail}>Type: {taskDetails.type}</Text>
       <Text style={styles.detail}>Due: {moment(taskDetails.dueDate).format('DD/MM/YYYY hh:mm:ss')}</Text>
       <Text style={styles.detail}>Description:</Text>
@@ -67,14 +81,23 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
+  titleContainer: {
+    flexDirection: 'row',
+  },
   title: {
     color: '#000',
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '700',
-    marginBottom: 20,
+    marginLeft: 5,
+    marginBottom: 15,
+  },
+  completedTaskTitle: {
+    textDecorationLine: 'line-through',
+    textDecorationStyle: 'solid',
   },
   detail: {
     fontSize: 16,
+    margin: 3,
   },
   buttonContainer: {
     marginTop: 20,
@@ -88,7 +111,7 @@ const styles = StyleSheet.create({
     margin: 5,
     borderWidth: 1,
     borderColor: 'gray',
-    padding: 10,
+    padding: 7,
   },
 });
 
