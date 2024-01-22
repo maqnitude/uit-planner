@@ -56,32 +56,56 @@ export const generateCourses = (semesters: Semester[], num_courses: number = 6):
       };
 
       let day: string;
+      let startTimeStamp: string;
+      let startTime: Date | null = null;
+
       do {
         day = days[Math.floor(Math.random() * days.length)];
+
+        const r = Math.floor(Math.random() + 0.5);
+        switch (r) {
+          case 0:
+            if (morningSchedules[day].some(timeStamp => new Date(`1970-01-01T${timeStamp}:00`) >= latestEndTimeMorning[day])) {
+              do {
+                startTimeStamp = morningSchedules[day].splice(Math.floor(Math.random() * morningSchedules[day].length), 1)[0];
+                startTime = new Date(`1970-01-01T${startTimeStamp}:00`);
+              } while (startTime < latestEndTimeMorning[day]);
+            } else if (afternoonSchedules[day].some(timeStamp => new Date(`1970-01-01T${timeStamp}:00`) >= latestEndTimeAfternoon[day])) {
+              do {
+                startTimeStamp = afternoonSchedules[day].splice(Math.floor(Math.random() * afternoonSchedules[day].length), 1)[0];
+                startTime = new Date(`1970-01-01T${startTimeStamp}:00`);
+              } while (startTime < latestEndTimeAfternoon[day]);
+            }
+            break;
+          case 1:
+            if (afternoonSchedules[day].some(timeStamp => new Date(`1970-01-01T${timeStamp}:00`) >= latestEndTimeAfternoon[day])) {
+              do {
+                startTimeStamp = afternoonSchedules[day].splice(Math.floor(Math.random() * afternoonSchedules[day].length), 1)[0];
+                startTime = new Date(`1970-01-01T${startTimeStamp}:00`);
+              } while (startTime < latestEndTimeAfternoon[day]);
+            } else if (morningSchedules[day].some(timeStamp => new Date(`1970-01-01T${timeStamp}:00`) >= latestEndTimeMorning[day])) {
+              do {
+                startTimeStamp = morningSchedules[day].splice(Math.floor(Math.random() * morningSchedules[day].length), 1)[0];
+                startTime = new Date(`1970-01-01T${startTimeStamp}:00`);
+              } while (startTime < latestEndTimeMorning[day]);
+            }
+            break;
+        }
+
+        if (startTime !== null) {
+          break;
+        }
       } while (courseCountPerDay[day] >= MAX_COURSES_PER_DAY || (morningSchedules[day].length === 0 || afternoonSchedules[day].length === 0));
 
-      let startTimeStamp: string;
-      let startTime: Date;
-
-      if (morningSchedules[day].some(timeStamp => new Date(`1970-01-01T${timeStamp}:00`) >= latestEndTimeMorning[day])) {
-        do {
-          startTimeStamp = morningSchedules[day].splice(Math.floor(Math.random() * morningSchedules[day].length), 1)[0];
-          startTime = new Date(`1970-01-01T${startTimeStamp}:00`);
-        } while (startTime < latestEndTimeMorning[day]);
-      } else if (afternoonSchedules[day].some(timeStamp => new Date(`1970-01-01T${timeStamp}:00`) >= latestEndTimeAfternoon[day])) {
-        do {
-          startTimeStamp = afternoonSchedules[day].splice(Math.floor(Math.random() * afternoonSchedules[day].length), 1)[0];
-          startTime = new Date(`1970-01-01T${startTimeStamp}:00`);
-        } while (startTime < latestEndTimeAfternoon[day]);
-      } else {
+      if (startTime === null) {
         console.log(`No more valid time slots for ${day}.`)
         continue;
       }
-
+      
       let num_periods = coursePeriods[Math.floor(Math.random() * coursePeriods.length)];
       let endTime = new Date(startTime.getTime() + 45 * num_periods * 60 * 1000);
-      let endTimeHours = endTime.getHours();
-      let endTimeMinutes = endTime.getMinutes();
+      const endTimeHours = endTime.getHours();
+      const endTimeMinutes = endTime.getMinutes();
 
       if ((endTimeHours === 11 && endTimeMinutes > 30) || (endTimeHours ===12) ||  (endTimeHours === 13)) {
         endTime = new Date('1970-01-01T11:30:00');
