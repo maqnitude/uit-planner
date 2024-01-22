@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, SectionList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import 'react-native-get-random-values';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 
 import { Task } from '../types';
-import { getAllTasks, removeTask } from '../storage/TasksStorage';
+import { getAllTasks } from '../storage/TasksStorage';
 import { deleteTask } from '../utils/TaskManager';
 import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
 import { getAllCourses } from '../storage/CoursesStorage';
@@ -15,8 +15,13 @@ interface TasksScreenProps {
   navigation: any;
 }
 
+interface Section {
+  title: string;
+  data: Task[];
+}
+
 const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [sections, setSections] = useState<Section[]>([]);
   const { currentSemesterId } = useCurrentSemester();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -30,10 +35,16 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
       // get tasks by semester id
       const fetchedTasks = await getAllTasks();
       const courses = await getAllCourses();
-      const currentSemesterCourseIds = courses?.filter(course => course.semesterId === currentSemesterId).map(course => course.id) ?? [];
-      const currentSemesterTasks = fetchedTasks?.filter(task => currentSemesterCourseIds.includes(task.courseId)) ?? [];
+      const currentSemesterCourses = courses?.filter(course => course.semesterId === currentSemesterId) ?? [];
+      const currentSemesterTasks = fetchedTasks?.filter(task => currentSemesterCourses.some(course => course.id === task.courseId)) ?? [];
 
-      setTasks(currentSemesterTasks);
+      // group tasks by course and sort within each course
+      const groupedTasks = currentSemesterCourses.map(course => ({
+        title: `${course.code} - ${course.name}`,
+        data: currentSemesterTasks.filter(task => task.courseId === course.id).sort((a, b) => Number(a.completed) - Number(b.completed)),
+      }));
+
+      setSections(groupedTasks);
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -63,7 +74,6 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
         {
           text: 'OK',
           onPress: async () => {
-            // await removeTask(item.id);
             await deleteTask(item);
             fetchTasks();
           },
@@ -78,14 +88,15 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
       {error && <Text style={styles.errorText}>Error loading tasks: {error}</Text>}
 
       {!isLoading && !error && (
-        <FlatList
+        <SectionList
           contentContainerStyle={styles.listContent}
-          data={tasks}
+          sections={sections}
           renderItem={({ item }) => (
             <View style={styles.itemBlock}>
               <TouchableOpacity onPress={() => handleItemPress(item)}>
                 <View>
                   <Text style={styles.itemTitle}>{item.name}</Text>
+                  <Text style={styles.itemStatus}>{item.completed ? 'DONE' : 'TODO'}</Text>
                   <Text style={styles.itemDue}>Due: {moment(item.dueDate).format('HH:mm:ss DD/MM/YYYY')}</Text>
                 </View>
               </TouchableOpacity>
@@ -93,6 +104,9 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
                 <Icon name="delete" size={25} />
               </TouchableOpacity>
             </View>
+          )}
+          renderSectionHeader={({ section: { title } }) => (
+            <Text style={styles.header}>{title}</Text>
           )}
           keyExtractor={item => item.name}
         />
@@ -111,6 +125,16 @@ const styles = StyleSheet.create({
   listContent: {
     paddingBottom: 70,
   },
+  header: {
+    color: '#003399',
+    fontSize: 20,
+    fontWeight: 'bold',
+    borderBottomWidth: 1,
+    borderBottomColor: 'gray',
+    marginTop: 20,
+    marginHorizontal: 20,
+    padding: 10,
+  },
   itemBlock: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -122,13 +146,19 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   itemTitle: {
-    fontSize: 20,
+    fontSize: 16,
     color: 'black',
     fontWeight: 'bold',
   },
+  itemStatus: {
+    fontSize: 12,
+    color: 'green',
+    marginTop: 2,
+    marginHorizontal: 2,
+  },
   itemDue: {
-    fontSize: 16,
-    color: 'blue',
+    fontSize: 14,
+    color: '#900d09',
     margin: 2,
   },
 });
