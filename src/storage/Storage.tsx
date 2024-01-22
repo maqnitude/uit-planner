@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { removeAllCourses } from './CoursesStorage';
 import { storeCourses } from './CoursesStorage';
-import { generateCourses, generateSemesters, generateTasks } from './TestData';
+import { generateCourses, generateSemesters, generateTasks } from '../utils/DataGenerator';
 import { removeAllTasks, storeTasks } from './TasksStorage';
 import { removeAllSemesters, storeSemesters } from './SemestersStorage';
 
