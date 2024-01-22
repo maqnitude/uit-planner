@@ -114,3 +114,14 @@ export const removeAllTasks = async () => {
     throw error;
   }
 };
+
+export const updateTask = async (updatedTask: Task) => {
+  try {
+    let tasks = await getTasksFromStorage() || [];
+    tasks = tasks?.map(task => task.id === updatedTask.id ? updatedTask : task);
+    await storeTasksToStorage(tasks);
+  } catch (error) {
+    console.error('Error updating task:', error);
+    throw error;
+  }
+};

@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, SectionList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import CheckBox from '@react-native-community/checkbox';
 import { useFocusEffect } from '@react-navigation/native';
 import 'react-native-get-random-values';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 
 import { Task } from '../types';
-import { getAllTasks } from '../storage/TasksStorage';
+import { getAllTasks, updateTask } from '../storage/TasksStorage';
 import { deleteTask } from '../utils/TaskManager';
 import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
 import { getAllCourses } from '../storage/CoursesStorage';
@@ -62,6 +63,19 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
     navigation.navigate('Task Details', { item });
   };
 
+  const handleToggleComplete = async (item: Task, newValue: boolean) => {
+    item.completed = newValue;
+    await updateTask(item);
+
+    setSections(sections.map(section => ({
+      ...section,
+      data: section.data.map(task => task.id === item.id ? { ...task, completed: newValue } : task),
+    })).map(section => ({
+      ...section,
+      data: section.data.sort((a, b) => Number(a.completed) - Number(b.completed)),
+    })));
+  };
+
   const handleDeletePress = async (item: Task) => {
     Alert.alert(
       'Delete Task',
@@ -92,14 +106,20 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
           contentContainerStyle={styles.listContent}
           sections={sections}
           renderItem={({ item }) => (
-            <View style={styles.itemBlock}>
-              <TouchableOpacity onPress={() => handleItemPress(item)}>
-                <View>
-                  <Text style={styles.itemTitle}>{item.name}</Text>
-                  <Text style={styles.itemStatus}>{item.completed ? 'DONE' : 'TODO'}</Text>
-                  <Text style={styles.itemDue}>Due: {moment(item.dueDate).format('HH:mm:ss DD/MM/YYYY')}</Text>
-                </View>
-              </TouchableOpacity>
+            <View style={[styles.itemBlock, item.completed ? styles.completedTaskBlock : {}]}>
+              <View style={styles.checkboxContainer}>
+                <CheckBox
+                  value={item.completed}
+                  onValueChange={(newValue) => handleToggleComplete(item, newValue)}
+                />
+                <TouchableOpacity style={styles.itemDetails} onPress={() => handleItemPress(item)}>
+                  <View>
+                    <Text style={[styles.itemTitle, item.completed ? styles.completedTaskTitle : {}]}>{item.name}</Text>
+                    <Text style={[styles.itemStatus, item.completed ? styles.completedTaskStatus : {}]}>{item.completed ? 'DONE' : 'TODO'}</Text>
+                    <Text style={[styles.itemDue, item.completed ? styles.completedTaskTitle : {}]}>Due: {moment(item.dueDate).format('HH:mm:ss DD/MM/YYYY')}</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
               <TouchableOpacity onPress={() => handleDeletePress(item)}>
                 <Icon name="delete" size={25} />
               </TouchableOpacity>
@@ -133,7 +153,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'gray',
     marginTop: 20,
     marginHorizontal: 20,
-    padding: 10,
+    padding: 5,
   },
   itemBlock: {
     flexDirection: 'row',
@@ -143,7 +163,14 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginTop: 20,
     marginHorizontal: 20,
-    padding: 10,
+    padding: 5,
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  itemDetails: {
+    marginLeft: 7,
   },
   itemTitle: {
     fontSize: 16,
@@ -152,14 +179,25 @@ const styles = StyleSheet.create({
   },
   itemStatus: {
     fontSize: 12,
+    fontWeight: 'bold',
     color: 'green',
-    marginTop: 2,
     marginHorizontal: 2,
   },
   itemDue: {
     fontSize: 14,
     color: '#900d09',
-    margin: 2,
+    marginHorizontal: 2,
+  },
+  completedTaskBlock: {
+    backgroundColor: '#b5b5b5',
+  },
+  completedTaskTitle: {
+    color: 'black',
+    textDecorationStyle: 'solid',
+    textDecorationLine: 'line-through',
+  },
+  completedTaskStatus: {
+    color: '#1a98a6',
   },
 });
 
