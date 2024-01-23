@@ -3,6 +3,7 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react
 import { useFocusEffect } from '@react-navigation/native';
 import 'react-native-get-random-values';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import moment from 'moment';
 
 import { Course } from '../types';
 import { getCoursesBySemester, removeCourse } from '../storage/CoursesStorage';
@@ -94,8 +95,9 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
             <View style={styles.itemBlock}>
               <TouchableOpacity onPress={() => handleItemPress(item)}>
                 <View>
-                  <Text style={styles.itemTitle}>{item.name}</Text>
-                  <Text style={styles.itemCode}>{item.code}</Text>
+                  <Text style={styles.itemTitle}>{item.code} - {item.name}</Text>
+                  <Text style={styles.itemTime}>{item.schedule[0].day}, {moment(item.schedule[0].startTime).format('HH:mm')} - {moment(item.schedule[0].endTime).format('HH:mm')}</Text>
+                  <Text style={styles.itemLoc}>Location: {item.location}</Text>
                 </View>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => handleDeletePress(item)}>
@@ -136,14 +138,18 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   itemTitle: {
-    fontSize: 20,
+    fontSize: 18,
     color: 'black',
     fontWeight: '700',
   },
-  itemCode: {
-    fontSize: 16,
+  itemLoc: {
+    fontSize: 15,
     color: 'gray',
-    margin: 5,
+  },
+  itemTime: {
+    fontSize: 15,
+    color: 'gray',
+    marginVertical: 3,
   },
   addButton: {
     backgroundColor: '#1e90ff',
