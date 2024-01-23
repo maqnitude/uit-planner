@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Button, ScrollView, TouchableOpacity } from 'react-native';
 import ProgressBar from 'react-native-progress/Bar';
 import { useFocusEffect } from '@react-navigation/native';
 import moment from 'moment';
 
-import { Course, Task, Semester } from '../types';
-import { getCoursesBySemester, getAllCourses } from '../storage/CoursesStorage';
+import { Course, Task } from '../types';
+import { getAllCourses } from '../storage/CoursesStorage';
 import { getAllTasks } from '../storage/TasksStorage';
-import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
-import { getSemester } from '../storage/SemestersStorage';
 
 interface HomeScreenProps {
   navigation: any;
@@ -41,68 +39,77 @@ const CustomProgressBar: React.FC<CustomProgressBarProps> = ({ startLabel, endLa
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [courses, setCourses] = useState<Course[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const { currentSemesterId } = useCurrentSemester();
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [semester, setSemester] = useState<Semester[]>();
-  
-  const fetchData = React.useCallback(async () =>{
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchCourses();
+      fetchTasks();
+    }, [])
+  );
+
+  const fetchCourses = async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      let currentSemester: Semester[] | undefined;
-      if (currentSemesterId) {
-          currentSemester = await getSemester(currentSemesterId);
-      }
-
-      setSemester(currentSemester ?? []);
-
-      let currentSemesterCourses: Course[] | undefined;
-      if (currentSemesterId) {
-          currentSemesterCourses = await getCoursesBySemester(currentSemesterId);
-      }
-
-      setCourses(currentSemesterCourses ?? []);
-
-      const fetchedTasks = await getAllTasks();
-      const courses = await getAllCourses();
-      const currentSemesterCourseIds = courses?.filter(course => course.semesterId === currentSemesterId).map(course => course.id) ?? [];
-      const currentSemesterTasks = fetchedTasks?.filter(task => currentSemesterCourseIds.includes(task.courseId)) ?? [];
-
-      setTasks(currentSemesterTasks);
-      
+      const fetchedCourses = await getAllCourses();
+      setCourses(fetchedCourses ?? []);
     } catch (err) {
       setError((err as Error).message);
     } finally {
       setIsLoading(false);
     }
-  }, [currentSemesterId]);
+  };
 
-  useEffect(() => {
-    fetchData();
-  }, [currentSemesterId]);
+  const fetchTasks = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const fetchedTasks = await getAllTasks();
+      setTasks(fetchedTasks ?? []);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const currentDayOfWeek = moment().format('dddd');
   const coursesForToday = courses.filter(course => course.schedule[0].day === currentDayOfWeek);
+
+  const currentTime = moment();
+  const upcomingTasks = tasks
+    .filter(task => moment(task.dueDate).isAfter(currentTime))
+    .sort((task1, task2) => moment(task1.dueDate).diff(moment(task2.dueDate)))
+    .slice(0, 5);
+
+  const semesterStartDate = moment('2024-01-01');
+  const semesterEndDate = moment('2024-02-20');
+  const currentDate = moment();
+
+  const semesterProgressPercent = currentDate.diff(semesterStartDate) / semesterEndDate.diff(semesterStartDate) * 100;
 
   const renderCoursesForToday = () => {
     if (coursesForToday.length > 0) {
       return (
         <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Courses for Today</Text>
-            <View style={styles.wrapper}>
-              <ScrollView>
-                {coursesForToday.map((course, index) => (
-                  <TouchableOpacity key={index} style={styles.courseContainer} onPress={() => navigation.navigate('Course Details', { item: course })}>
-                    <Text style={styles.boldText}>{course.name} ({course.code})</Text>
-                    <Text>Location: {course.location}</Text>
-                    <Text>{moment(course.schedule[0].startTime).format('HH:mm')} - {moment(course.schedule[0].endTime).format('HH:mm')}</Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </View>
-            <Button title="View All Courses" onPress={() => navigation.navigate('Courses')} />
+          <Text style={styles.sectionTitle}>Courses for Today</Text>
+          <View style={styles.wrapper}>
+            <ScrollView>
+              {coursesForToday.map((course, index) => (
+                <TouchableOpacity key={index} style={styles.courseContainer} onPress={() => navigation.navigate('Course Details', { item: course })}>
+                  <Text style={styles.boldText}>{course.name} ({course.code})</Text>
+                  <Text>Location: {course.location}</Text>
+                  <Text>{moment(course.schedule[0].startTime).format('HH:mm')} - {moment(course.schedule[0].endTime).format('HH:mm')}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+          <Button title="View All Courses" onPress={() => navigation.navigate('Courses')} />
         </View>
       );
     } else {
@@ -115,12 +122,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       );
     }
   };
-
-  const currentTime = moment();
-  const upcomingTasks = tasks
-    .filter(task => moment(task.dueDate).isAfter(currentTime))
-    .sort((task1, task2) => moment(task1.dueDate).diff(moment(task2.dueDate)))
-    .slice(0, 5);
 
   const renderUpcomingTasks = () => {
     if (upcomingTasks.length > 0) {
@@ -151,20 +152,9 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       );
     }
   };
-  let semesterStartDate = moment('2024-01-01');
-  let semesterEndDate = moment('2024-12-31');
-  if(semester){
-    semesterStartDate = moment(semester.start);
-    semesterEndDate = moment(semester.end);
-  }
-  const currentDate = moment();
-
-  const semesterProgressPercent = currentDate.diff(semesterStartDate) / semesterEndDate.diff(semesterStartDate) * 100;
 
   return (
     <ScrollView style={styles.mainContainer} contentContainerStyle={{ paddingBottom: 50 }}>
-      {isLoading && <Text>Loading semester...</Text>}
-      {error && <Text style={styles.errorText}>Error loading semester: {error}</Text>}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Semester Progress</Text>
         <CustomProgressBar
