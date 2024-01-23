@@ -9,7 +9,7 @@ import { Semester } from '../types';
 import { getAllSemesters, removeSemester } from '../storage/SemestersStorage';
 import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
 import moment from 'moment';
-import { SearchBar } from 'react-native-elements';
+import SearchBar from '../components/SearchBars';
 
 interface SemesterScreenProps {
   navigation: any;
@@ -22,7 +22,6 @@ const SemesterScreen: React.FC<SemesterScreenProps> = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [searchQuery, setSearchQuery] = useState('');
   const [selectedSemesters, setSelectedSemesters] = useState(null);
 
   useFocusEffect(
@@ -73,16 +72,11 @@ const SemesterScreen: React.FC<SemesterScreenProps> = ({ navigation }) => {
     );
   };
 
-  const handleSearch = (semesters) => {
+  const handleSearch = (searchQuery, semesters) => {
     setSelectedSemesters(semesters.filter(semester => semester.name.includes(searchQuery.trim())));
   };
 
-  const handleClear = () => {
-    setSearchQuery('');
-  };
-
   useEffect(() => {
-    setSearchQuery('');
     setSelectedSemesters(semesters);
   }, [isLoading, error]);
 
@@ -91,12 +85,7 @@ const SemesterScreen: React.FC<SemesterScreenProps> = ({ navigation }) => {
       {isLoading && <Text>Loading semesters...</Text>}
       {error && <Text style={styles.errorText}>Error loading semesters: {error}</Text>}
       <SearchBar
-        placeholder="Type Here..."
-        onChangeText={(text) => setSearchQuery(text)}
-        value={searchQuery}
-        onSubmitEditing={() => handleSearch(semesters)}
-        onClear={handleClear}
-        cancelButtonTitle="Cancel"
+        onSearch={(searchQuery) => handleSearch(searchQuery,semesters)}
       />
       {!isLoading && !error && (
         <FlatList

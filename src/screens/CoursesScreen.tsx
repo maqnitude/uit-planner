@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Course } from '../types';
 import { getCoursesBySemester, removeCourse } from '../storage/CoursesStorage';
 import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
-import { SearchBar } from 'react-native-elements';
+import SearchBar from '../components/SearchBars';
 
 interface CoursesScreenProps {
   navigation: any;
@@ -20,7 +20,6 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [searchQuery, setSearchQuery] = useState('');
   const [selectedCourses, setSelectedCourses] = useState(null);
 
   const fetchCourses = React.useCallback(async () => {
@@ -72,16 +71,11 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
     );
   };
 
-  const handleSearch = (courses) => {
+  const handleSearch = (searchQuery, courses) => {
     setSelectedCourses(courses.filter(course => course.name.includes(searchQuery.trim())));
   };
 
-  const handleClear = () => {
-    setSearchQuery('');
-  };
-
   useEffect(() => {
-    setSearchQuery('');
     setSelectedCourses(courses);
   }, [isLoading, error]);
 
@@ -90,12 +84,7 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
       {isLoading && <Text>Loading courses...</Text>}
       {error && <Text style={styles.errorText}>Error loading courses: {error}</Text>}
       <SearchBar
-        placeholder="Type Here..."
-        onChangeText={(text) => setSearchQuery(text)}
-        value={searchQuery}
-        onSubmitEditing={() => handleSearch(courses)}
-        onClear={handleClear}
-        cancelButtonTitle="Cancel"
+        onSearch={(searchQuery) => handleSearch(searchQuery,courses)}
       />
       {!isLoading && !error && (
         <FlatList

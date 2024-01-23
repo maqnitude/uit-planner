@@ -11,7 +11,7 @@ import { deleteTask } from '../utils/TaskManager';
 import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
 import { getAllCourses } from '../storage/CoursesStorage';
 
-import { SearchBar } from 'react-native-elements';
+import SearchBar from '../components/SearchBars';
 
 interface TasksScreenProps {
   navigation: any;
@@ -24,7 +24,6 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [searchQuery, setSearchQuery] = useState('');
   const [selectedTasks, setSelectedTasks] = useState(null);
 
   const fetchTasks = React.useCallback(async () => {
@@ -77,16 +76,11 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
     );
   };
 
-  const handleSearch = (tasks) => {
+  const handleSearch = (searchQuery, tasks) => {
     setSelectedTasks(tasks.filter(task => task.name.includes(searchQuery.trim())));
   };
 
-  const handleClear = () => {
-    setSearchQuery('');
-  };
-
   useEffect(() => {
-    setSearchQuery('');
     setSelectedTasks(tasks);
   }, [isLoading, error]);
 
@@ -95,12 +89,7 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
       {isLoading && <Text>Loading tasks...</Text>}
       {error && <Text style={styles.errorText}>Error loading tasks: {error}</Text>}
       <SearchBar
-        placeholder="Type Here..."
-        onChangeText={(text) => setSearchQuery(text)}
-        value={searchQuery}
-        onSubmitEditing={() => handleSearch(tasks)}
-        onClear={handleClear}
-        cancelButtonTitle="Cancel"
+        onSearch={(searchQuery) => handleSearch(searchQuery,tasks)}
       />
       {!isLoading && !error && (
         <FlatList
