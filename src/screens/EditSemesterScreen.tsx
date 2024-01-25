@@ -44,19 +44,19 @@ const EditSemesterScreen: React.FC<EditSemesterScreenProps> = ({ navigation, rou
 
   const isSemesterOverlapped = (updatedSemester: Semester, existingSemesters: Semester[]): boolean => {
     for (let existingSemester of existingSemesters) {
-        if (existingSemester.id !== updatedSemester.id){
-            const SemesterDuration = existingSemester;
-            const newSemesterStartTime = moment(updatedSemester.start).format('MM:DD:YYYY');
-            const newSemesterEndTime = moment(updatedSemester.end).format('MM:DD:YYYY');
-            const existingSemesterStartTime = moment(SemesterDuration.start).format('MM:DD:YYYY');
-            const existingSemesterEndTime = moment(SemesterDuration.end).format('MM:DD:YYYY');
+      if (existingSemester.id !== updatedSemester.id) {
+        const SemesterDuration = existingSemester;
+        const newSemesterStartTime = moment(updatedSemester.start).format('MM:DD:YYYY');
+        const newSemesterEndTime = moment(updatedSemester.end).format('MM:DD:YYYY');
+        const existingSemesterStartTime = moment(SemesterDuration.start).format('MM:DD:YYYY');
+        const existingSemesterEndTime = moment(SemesterDuration.end).format('MM:DD:YYYY');
 
-            if ((newSemesterStartTime >= existingSemesterStartTime && newSemesterStartTime <= existingSemesterEndTime) ||
-            (newSemesterEndTime >= existingSemesterStartTime && newSemesterEndTime <= existingSemesterEndTime) ||
-            (newSemesterStartTime <= existingSemesterStartTime && newSemesterEndTime >= existingSemesterEndTime)) {
-                return true;
-            }
+        if ((newSemesterStartTime >= existingSemesterStartTime && newSemesterStartTime < existingSemesterEndTime) ||
+          (newSemesterEndTime > existingSemesterStartTime && newSemesterEndTime <= existingSemesterEndTime) ||
+          (newSemesterStartTime <= existingSemesterStartTime && newSemesterEndTime >= existingSemesterEndTime)) {
+          return true;
         }
+      }
     }
     return false;
   };
@@ -83,21 +83,20 @@ const EditSemesterScreen: React.FC<EditSemesterScreenProps> = ({ navigation, rou
     const endYear = endTimeMoment.year();
 
     if (startYear < 2013 || endYear < 2013) {
-        Alert.alert('Invalid input', 'Start and end year must be greater than or equal to 2013');
-        return;
+      Alert.alert('Invalid input', 'Start and end year must be greater than or equal to 2013');
+      return;
     }
 
     const monthDifference = endTimeMoment.month() - startTimeMoment.month();
-    if (monthDifference > 6)
-    {
-        Alert.alert('Invalid input', 'Month difference must be at most 6 months');
-        return;
+    if (monthDifference > 6) {
+      Alert.alert('Invalid input', 'Month difference must be at most 6 months');
+      return;
     }
 
     const yearDifference = endYear - startYear;
     if (yearDifference > 1) {
-        Alert.alert('Invalid input', 'Year difference must be at most 1 year');
-        return;
+      Alert.alert('Invalid input', 'Year difference must be at most 1 year');
+      return;
     }
 
     const updatedSemester: Semester = {

@@ -84,7 +84,9 @@ const EditCourseScreen: React.FC<EditCourseScreenProps> = ({ route, navigation }
 
         if (courseDuration.day === updatedCourse.schedule[0].day
           && ((newCourseStartTime >= existingCourseStartTime && newCourseStartTime < existingCourseEndTime)
-          || (newCourseEndTime > existingCourseStartTime && newCourseEndTime <= existingCourseEndTime))) {
+            || (newCourseEndTime > existingCourseStartTime && newCourseEndTime <= existingCourseEndTime)
+            || (newCourseStartTime <= existingCourseStartTime && newCourseEndTime >= existingCourseEndTime)
+          )) {
           return true;
         }
       }
