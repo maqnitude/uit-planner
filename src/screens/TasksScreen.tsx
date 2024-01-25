@@ -11,6 +11,7 @@ import { getAllTasks, updateTask } from '../storage/TasksStorage';
 import { deleteTask } from '../utils/TaskManager';
 import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
 import { getAllCourses } from '../storage/CoursesStorage';
+import SearchBar from '../components/SearchBar';
 
 interface TasksScreenProps {
   navigation: any;
@@ -23,6 +24,7 @@ interface Section {
 
 const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
   const [sections, setSections] = useState<Section[]>([]);
+  const [filteredSections, setFilteredSections] = useState<Section[]>([]);
   const { currentSemesterId } = useCurrentSemester();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -46,6 +48,7 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
       }));
 
       setSections(groupedTasks);
+      setFilteredSections(groupedTasks);
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -58,6 +61,18 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
       fetchTasks();
     }, [fetchTasks])
   );
+
+  const handleSearch = (searchText: string) => {
+    if (searchText) {
+      const filtered = sections.map(section => ({
+        ...section,
+        data: section.data.filter(task => task.name.toLowerCase().includes(searchText.toLowerCase())),
+      }));
+      setFilteredSections(filtered);
+    } else {
+      setFilteredSections(sections);
+    }
+  };
 
   const handleItemPress = (item: Task) => {
     navigation.navigate('Task Details', { item });
@@ -100,11 +115,13 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
     <View style={styles.container}>
       {isLoading && <Text>Loading tasks...</Text>}
       {error && <Text style={styles.errorText}>Error loading tasks: {error}</Text>}
-
+      <SearchBar
+        onSearch={handleSearch}
+      />
       {!isLoading && !error && (
         <SectionList
           contentContainerStyle={styles.listContent}
-          sections={sections}
+          sections={filteredSections}
           renderItem={({ item }) => (
             <View style={[styles.itemBlock, item.completed ? styles.completedTaskBlock : {}]}>
               <View style={styles.checkboxContainer}>
