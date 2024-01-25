@@ -46,8 +46,10 @@ const SemesterScreen: React.FC<SemesterScreenProps> = ({ navigation }) => {
 
   const handleSearch = (searchText: string) => {
     if (searchText) {
+      searchText = searchText.trim().toLowerCase();
       const filtered = semesters.filter(semester =>
-        semester.name.toLowerCase().includes(searchText.toLowerCase()));
+        semester.name.toLowerCase().includes(searchText)
+      );
       setFilteredSemesters(filtered);
     } else {
       setFilteredSemesters(semesters);
