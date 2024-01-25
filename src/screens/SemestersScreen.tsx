@@ -22,7 +22,7 @@ const SemesterScreen: React.FC<SemesterScreenProps> = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [selectedSemesters, setSelectedSemesters] = useState(null);
+  const [selectedSemesters, setSelectedSemesters] = useState<Semester[]>([]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -72,8 +72,12 @@ const SemesterScreen: React.FC<SemesterScreenProps> = ({ navigation }) => {
     );
   };
 
-  const handleSearch = (searchQuery, semesters) => {
-    setSelectedSemesters(semesters.filter(semester => semester.name.includes(searchQuery.trim())));
+  const handleSearch = (searchQuery: string, semesters: Semester[]) => {
+    searchQuery = searchQuery.trim().toLowerCase();
+    const results = semesters.filter(semester =>
+      semester.name.toLowerCase().includes(searchQuery)
+    );
+    setSelectedSemesters(results);
   };
 
   useEffect(() => {
@@ -85,7 +89,7 @@ const SemesterScreen: React.FC<SemesterScreenProps> = ({ navigation }) => {
       {isLoading && <Text>Loading semesters...</Text>}
       {error && <Text style={styles.errorText}>Error loading semesters: {error}</Text>}
       <SearchBar
-        onSearch={(searchQuery) => handleSearch(searchQuery,semesters)}
+        onSearch={(searchQuery: string) => handleSearch(searchQuery, semesters)}
       />
       {!isLoading && !error && (
         <FlatList
