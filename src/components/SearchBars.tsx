@@ -1,34 +1,40 @@
 import React, { useState } from 'react';
-import { TextInput, View, Button, StyleSheet } from 'react-native';
+import { TextInput, View, TouchableOpacity, StyleSheet } from 'react-native';
+import Icon from 'react-native-vector-icons/AntDesign';
 
-const SearchBar = ({ onSearch }) => {
-  const [searchQuery, setSearchQuery] = useState('');
+interface SearchBarProps {
+  onSearch: (searchText: string) => void;
+}
+
+const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
+  const [searchText, setSearchText] = useState('');
 
   const handleClear = () => {
-    setSearchQuery('');
+    setSearchText('');
+    onSearch('');
   };
 
-  const handleSearch = () => {
-    onSearch(searchQuery);
+  const handleSearchTextChange = (text: string) => {
+    setSearchText(text);
+    onSearch(text);
   };
 
   return (
     <View style={styles.container}>
+      <View style={styles.searchIcon}>
+        <Icon name="search1" size={19} />
+      </View>
       <TextInput
-        style={{
-          color: '#000000',
-          fontSize: 20,
-          borderColor: 'gray',
-          borderWidth: 1,
-          flex: 1,
-        }}
-        placeholder="Type Here..."
-        placeholderTextColor={'#000000'}
-        onChangeText={(text) => setSearchQuery(text)}
-        onSubmitEditing={handleSearch}
-        value={searchQuery}
+        style={styles.searchBar}
+        value={searchText}
+        onChangeText={handleSearchTextChange}
+        placeholder="Search..."
       />
-      <Button title="X" onPress={handleClear} />
+      {searchText ? (
+        <TouchableOpacity style={styles.clearIcon} onPress={handleClear}>
+          <Icon name="closecircle" size={19} />
+        </TouchableOpacity>
+      ) : null}
     </View>
   );
 };
@@ -37,9 +43,22 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     borderColor: 'gray',
     borderWidth: 1,
+    borderRadius: 30,
+    marginVertical: 10,
+    marginHorizontal: 20,
+    paddingHorizontal: 10,
+  },
+  searchBar: {
+    flex: 1,
+    height: 40,
+  },
+  searchIcon: {
+    marginRight: 5,
+  },
+  clearIcon: {
+    marginLeft: 5,
   },
 });
 
