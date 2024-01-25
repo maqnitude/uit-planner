@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScrollView, View, Text, Dimensions, StyleSheet } from 'react-native';
 import moment from 'moment';
 import { useFocusEffect } from '@react-navigation/native';
@@ -27,6 +27,8 @@ const TimeTable = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
+
   const fetchCourses = React.useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -50,7 +52,18 @@ const TimeTable = () => {
     }, [fetchCourses])
   );
 
-  const screenWidth = Dimensions.get('window').width;
+  useEffect(() => {
+    const updateWidth = () => {
+      setScreenWidth(Dimensions.get('window').width);
+    };
+
+    const subscription = Dimensions.addEventListener('change', updateWidth);
+
+    return () => {
+      subscription?.remove();
+    };
+  }, []);
+
   const timeStampWidth = 50;
   const headerHeight = 30;
   const unitHeight = 90;
@@ -81,7 +94,7 @@ const TimeTable = () => {
             <ScrollView horizontal>
               <View style={styles.row}>
                 {DAYS.map((day, dayIndex) => (
-                  <View key={dayIndex} style={{ width: (screenWidth - timeStampWidth) / 3 }}>
+                  <View key={dayIndex} style={{ width: (screenWidth - timeStampWidth) / (screenWidth > 600 ? 6 : 3) }}>
                     <Text style={[styles.header, styles.boldText, {height: headerHeight}]}>{day}</Text>
                     {TIMES.map((time, timeIndex) => {
                       return <View key={timeIndex} style={[styles.timeSlot, {height: heights[timeIndex]}]}>
