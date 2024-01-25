@@ -66,9 +66,14 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
 
   const handleSearch = (searchText: string) => {
     if (searchText) {
+      searchText = searchText.trim().toLowerCase();
       const filtered = sections.map(section => ({
         ...section,
-        data: section.data.filter(task => task.name.toLowerCase().includes(searchText.toLowerCase())),
+        data: section.data.filter(task =>
+          task.name.toLowerCase().includes(searchText) ||
+          task.description.toLowerCase().includes(searchText) ||
+          task.type.toLowerCase().includes(searchText)
+        ),
       }));
       setFilteredSections(filtered);
     } else {
