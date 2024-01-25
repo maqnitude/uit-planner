@@ -51,9 +51,13 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
 
   const handleSearch = (searchText: string) => {
     if (searchText) {
+      searchText = searchText.trim().toLowerCase();
       const filtered = courses.filter(course =>
-        course.name.toLowerCase().includes(searchText.toLowerCase())
-        || course.code.toLowerCase().includes(searchText.toLowerCase()));
+        course.name.toLowerCase().includes(searchText) ||
+        course.code.toLowerCase().includes(searchText) ||
+        course.location.toLowerCase().includes(searchText) ||
+        course.schedule[0].day.toLowerCase().includes(searchText)
+      );
       setFilteredCourses(filtered);
     } else {
       setFilteredCourses(courses);
