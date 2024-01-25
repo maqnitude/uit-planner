@@ -66,36 +66,13 @@ const EditSemesterScreen: React.FC<EditSemesterScreenProps> = ({ navigation, rou
   };
 
   const handleSubmit = async () => {
-    if (!name || name.length > 100) {
-      Alert.alert('Invalid input', 'Please enter a valid semester name (1-100 characters).');
+    if (!name.trim() || name.length > 100) {
+      Alert.alert('Invalid input', 'Please enter a valid semester name (1-100 non-whitespace characters).');
       return;
     }
 
-    if (start >= end) {
-      Alert.alert('Invalid input', 'Start time must be earlier than end time.');
-      return;
-    }
-
-    const startTimeMoment = moment(start);
-    const endTimeMoment = moment(end);
-
-    const startYear = startTimeMoment.year();
-    const endYear = endTimeMoment.year();
-
-    if (startYear < 2013 || endYear < 2013) {
-      Alert.alert('Invalid input', 'Start and end year must be greater than or equal to 2013');
-      return;
-    }
-
-    const monthDifference = endTimeMoment.month() - startTimeMoment.month();
-    if (monthDifference > 6) {
-      Alert.alert('Invalid input', 'Month difference must be at most 6 months');
-      return;
-    }
-
-    const yearDifference = endYear - startYear;
-    if (yearDifference > 1) {
-      Alert.alert('Invalid input', 'Year difference must be at most 1 year');
+    if (!(end > start)) {
+      Alert.alert('Invalid input', 'The end date must be later than the start date');
       return;
     }
 
