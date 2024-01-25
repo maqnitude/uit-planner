@@ -51,34 +51,42 @@ const CourseDetailsScreen: React.FC<CourseDetailsScreenProps> = ({ navigation, r
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{courseDetails.code} - {courseDetails.name}</Text>
-      <Text style={styles.detail}>Credits: {courseDetails.credits}</Text>
-      <Text style={styles.detail}>Location: {courseDetails.location}</Text>
-      <Text style={styles.detail}>Time: {courseDetails.schedule[0].day}, {moment(courseDetails.schedule[0].startTime).format('HH:mm:ss')} - {moment(courseDetails.schedule[0].endTime).format('HH:mm:ss')}</Text>
-      <View style={styles.tasksContainer}>
-        <ScrollView>
-          {tasks?.map((task, index) => (
-            <TouchableOpacity key={index} style={styles.taskBlock} onPress={() => navigation.navigate('Task Details', { item: task })}>
-              <Text style={styles.boldText}>{task.name}</Text>
-              <Text>@{task.type}</Text>
-              <Text>Due: {moment(task.dueDate).format('HH:mm:ss DD/MM/YYYY')}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-      <View style={styles.buttonContainer}>
-        <View style={styles.leftButtons}>
-          <Button title="Edit" onPress={() => navigation.navigate('Edit Course', { course: courseDetails })} />
-          <Button title="Delete" color="#d9534f" onPress={() => handleDeletePress(courseDetails)} />
+    <ScrollView>
+      <View style={styles.container}>
+        <Text style={styles.title}>{courseDetails.code} - {courseDetails.name}</Text>
+        <Text style={styles.detail}>Credits: {courseDetails.credits}</Text>
+        <Text style={styles.detail}>Location: {courseDetails.location}</Text>
+        <Text style={styles.detail}>Time: {courseDetails.schedule[0].day}, {moment(courseDetails.schedule[0].startTime).format('HH:mm:ss')} - {moment(courseDetails.schedule[0].endTime).format('HH:mm:ss')}</Text>
+        <View style={styles.tasksContainer}>
+          <ScrollView>
+            {tasks?.map((task, index) => (
+              <TouchableOpacity key={index} style={styles.taskBlock} onPress={() => navigation.navigate('Task Details', { item: task })}>
+                <Text style={styles.boldText}>{task.name}</Text>
+                <Text>@{task.type}</Text>
+                <Text>Due: {moment(task.dueDate).format('HH:mm:ss DD/MM/YYYY')}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
-        <Button title="Add task" onPress={() => navigation.navigate('Add Task', { course: courseDetails })} />
+        <View style={styles.buttonContainer}>
+          <View style={styles.leftButtons}>
+            <Button title="Edit" onPress={() => navigation.navigate('Edit Course', { course: courseDetails })} />
+            <Button title="Delete" color="#d9534f" onPress={() => handleDeletePress(courseDetails)} />
+          </View>
+          <Button title="Add task" onPress={() => navigation.navigate('Add Task', { course: courseDetails })} />
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollView: {
+    flex: 1,
+  },
+  contentContainer: {
+    paddingBottom: 50,
+  },
   container: {
     flex: 1,
     padding: 20,
@@ -99,7 +107,7 @@ const styles = StyleSheet.create({
   leftButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '33%',
+    width: 120,
   },
   tasksContainer: {
     borderColor: 'gray',
