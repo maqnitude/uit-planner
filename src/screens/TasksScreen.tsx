@@ -71,7 +71,8 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
         ...section,
         data: section.data.filter(task =>
           task.name.toLowerCase().includes(searchText) ||
-          task.description.toLowerCase().includes(searchText)
+          task.description.toLowerCase().includes(searchText) ||
+          task.type.toLowerCase().includes(searchText)
         ),
       }));
       setFilteredSections(filtered);
