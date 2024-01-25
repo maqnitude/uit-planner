@@ -31,7 +31,7 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
       // get courses by semester id
       let currentSemesterCourses: Course[] | undefined;
       if (currentSemesterId) {
-          currentSemesterCourses = await getCoursesBySemester(currentSemesterId);
+        currentSemesterCourses = await getCoursesBySemester(currentSemesterId);
       }
 
       setCourses(currentSemesterCourses ?? []);
