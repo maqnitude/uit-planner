@@ -30,6 +30,7 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
     try {
       // get courses by semester id
       let currentSemesterCourses: Course[] | undefined;
+
       if (currentSemesterId) {
         currentSemesterCourses = await getCoursesBySemester(currentSemesterId);
       }

@@ -5,8 +5,9 @@ import { useFocusEffect } from '@react-navigation/native';
 import moment from 'moment';
 
 import { Course, Task } from '../types';
-import { getAllCourses } from '../storage/CoursesStorage';
-import { getAllTasks } from '../storage/TasksStorage';
+import { getAllCourses, getCoursesBySemester } from '../storage/CoursesStorage';
+import { getAllTasks, getTasksByCourses, getTasksBySemester } from '../storage/TasksStorage';
+import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
 
 interface HomeScreenProps {
   navigation: any;
@@ -37,46 +38,57 @@ const CustomProgressBar: React.FC<CustomProgressBarProps> = ({ startLabel, endLa
 };
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
+  const { currentSemesterId } = useCurrentSemester();
   const [courses, setCourses] = useState<Course[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      fetchCourses();
-      fetchTasks();
-    }, [])
-  );
-
-  const fetchCourses = async () => {
+  const fetchCourses = React.useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const fetchedCourses = await getAllCourses();
+      let fetchedCourses: Course[] | undefined;
+
+      if (currentSemesterId) {
+        fetchedCourses = await getCoursesBySemester(currentSemesterId);
+      }
+
       setCourses(fetchedCourses ?? []);
     } catch (err) {
       setError((err as Error).message);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentSemesterId]);
 
-  const fetchTasks = async () => {
+  const fetchTasks = React.useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const fetchedTasks = await getAllTasks();
+      let fetchedTasks: Task[] | undefined;
+
+      if (currentSemesterId) {
+        fetchedTasks = await getTasksBySemester(currentSemesterId);
+      }
+
       setTasks(fetchedTasks ?? []);
     } catch (err) {
       setError((err as Error).message);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentSemesterId]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchCourses();
+      fetchTasks();
+    }, [fetchCourses, fetchTasks])
+  );
 
   const currentDayOfWeek = moment().format('dddd');
   const coursesForToday = courses.filter(course => course.schedule[0].day === currentDayOfWeek);
