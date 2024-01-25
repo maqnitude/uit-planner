@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Task } from '../types';
+import { getCoursesBySemester } from './CoursesStorage';
 
 const TASKS_KEY = 'tasks';
 
@@ -66,8 +67,29 @@ export const getTasksByCourse = async (courseId: string): Promise<Task[] | undef
     const tasks = await getTasksFromStorage();
     return tasks?.filter(task => task.courseId === courseId);
   } catch (error) {
-    console.error('Error fetching tasks by courseId:', error);
+    console.error('Error fetching tasks by course:', error);
     throw error;
+  }
+};
+
+export const getTasksByCourses = async (courseIds: string[]): Promise<Task[] | undefined> => {
+  try {
+    const courseIdSet = new Set(courseIds);
+    const tasks = await getTasksFromStorage();
+    return tasks?.filter(task => courseIdSet.has(task.courseId));
+  } catch (error) {
+    console.error('Error fetching tasks by course:', error);
+    throw error;
+  }
+};
+
+export const getTasksBySemester = async (semesterId: string): Promise<Task[] | undefined> => {
+  try {
+    const courses = await getCoursesBySemester(semesterId) || [];
+    const courseIds = courses?.map(course => course.id);
+    return await getTasksByCourses(courseIds);
+  } catch (error) {
+    console.error('Error fetching tasks by semester:', error);
   }
 };
 

@@ -6,11 +6,11 @@ import 'react-native-get-random-values';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 
-import { Task } from '../types';
-import { getAllTasks, updateTask } from '../storage/TasksStorage';
+import { Course, Task } from '../types';
+import { getAllTasks, getTasksBySemester, updateTask } from '../storage/TasksStorage';
 import { deleteTask } from '../utils/TaskManager';
 import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
-import { getAllCourses } from '../storage/CoursesStorage';
+import { getAllCourses, getCoursesBySemester } from '../storage/CoursesStorage';
 import SearchBar from '../components/SearchBar';
 
 interface TasksScreenProps {
@@ -35,16 +35,18 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
     setError(null);
 
     try {
-      // get tasks by semester id
-      const fetchedTasks = await getAllTasks();
-      const courses = await getAllCourses();
-      const currentSemesterCourses = courses?.filter(course => course.semesterId === currentSemesterId) ?? [];
-      const currentSemesterTasks = fetchedTasks?.filter(task => currentSemesterCourses.some(course => course.id === task.courseId)) ?? [];
+      let currentSemesterCourses: Course[] = [];
+      let fetchedTasks: Task[] = [];
+
+      if (currentSemesterId) {
+        currentSemesterCourses = await getCoursesBySemester(currentSemesterId) || [];
+        fetchedTasks = await getTasksBySemester(currentSemesterId) || [];
+      }
 
       // group tasks by course and sort within each course
       const groupedTasks = currentSemesterCourses.map(course => ({
         title: `${course.code} - ${course.name}`,
-        data: currentSemesterTasks.filter(task => task.courseId === course.id).sort((a, b) => Number(a.completed) - Number(b.completed)),
+        data: fetchedTasks.filter(task => task.courseId === course.id).sort((a, b) => Number(a.completed) - Number(b.completed)),
       }));
 
       setSections(groupedTasks);
