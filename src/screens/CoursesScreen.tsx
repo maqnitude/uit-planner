@@ -21,7 +21,7 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [selectedCourses, setSelectedCourses] = useState(null);
+  const [selectedCourses, setSelectedCourses] = useState<Course[]>([]);
 
   const fetchCourses = React.useCallback(async () => {
     setIsLoading(true);
@@ -73,8 +73,15 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
     );
   };
 
-  const handleSearch = (searchQuery, courses) => {
-    setSelectedCourses(courses.filter(course => course.name.includes(searchQuery.trim())));
+  const handleSearch = (searchQuery: string, courses: Course[]) => {
+    searchQuery = searchQuery.trim().toLowerCase();
+    const results = courses.filter(course =>
+      course.name.toLowerCase().includes(searchQuery) ||
+      course.code.toLowerCase().includes(searchQuery) ||
+      course.location.toLowerCase().includes(searchQuery) ||
+      course.schedule[0].day.toLowerCase().includes(searchQuery)
+    );
+    setSelectedCourses(results);
   };
 
   useEffect(() => {
@@ -86,7 +93,7 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
       {isLoading && <Text>Loading courses...</Text>}
       {error && <Text style={styles.errorText}>Error loading courses: {error}</Text>}
       <SearchBar
-        onSearch={(searchQuery) => handleSearch(searchQuery,courses)}
+        onSearch={(searchQuery: string) => handleSearch(searchQuery, courses)}
       />
       {!isLoading && !error && (
         <FlatList
