@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import { useFocusEffect } from '@react-navigation/native';
@@ -9,7 +9,7 @@ import { Semester } from '../types';
 import { getAllSemesters, removeSemester } from '../storage/SemestersStorage';
 import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
 import moment from 'moment';
-import SearchBar from '../components/SearchBars';
+import SearchBar from '../components/SearchBar';
 
 interface SemesterScreenProps {
   navigation: any;
@@ -17,12 +17,11 @@ interface SemesterScreenProps {
 
 const SemesterScreen: React.FC<SemesterScreenProps> = ({ navigation }) => {
   const [semesters, setSemesters] = useState<Semester[]>([]);
+  const [filteredSemesters, setFilteredSemesters] = useState<Semester[]>([]);
   const { currentSemesterId, setCurrentSemesterId } = useCurrentSemester();
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const [selectedSemesters, setSelectedSemesters] = useState(null);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -37,10 +36,23 @@ const SemesterScreen: React.FC<SemesterScreenProps> = ({ navigation }) => {
     try {
       const fetchedSemesters = await getAllSemesters();
       setSemesters(fetchedSemesters ?? []);
+      setFilteredSemesters(fetchedSemesters ?? []);
     } catch (err) {
       setError((err as Error).message);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleSearch = (searchText: string) => {
+    if (searchText) {
+      searchText = searchText.trim().toLowerCase();
+      const filtered = semesters.filter(semester =>
+        semester.name.toLowerCase().includes(searchText)
+      );
+      setFilteredSemesters(filtered);
+    } else {
+      setFilteredSemesters(semesters);
     }
   };
 
@@ -72,25 +84,17 @@ const SemesterScreen: React.FC<SemesterScreenProps> = ({ navigation }) => {
     );
   };
 
-  const handleSearch = (searchQuery, semesters) => {
-    setSelectedSemesters(semesters.filter(semester => semester.name.includes(searchQuery.trim())));
-  };
-
-  useEffect(() => {
-    setSelectedSemesters(semesters);
-  }, [isLoading, error]);
-
   return (
     <View style={styles.container}>
       {isLoading && <Text>Loading semesters...</Text>}
       {error && <Text style={styles.errorText}>Error loading semesters: {error}</Text>}
       <SearchBar
-        onSearch={(searchQuery) => handleSearch(searchQuery,semesters)}
+        onSearch={handleSearch}
       />
       {!isLoading && !error && (
         <FlatList
           contentContainerStyle={styles.listContent}
-          data={selectedSemesters}
+          data={filteredSemesters}
           renderItem={({ item }) => (
             <View style={styles.itemBlock}>
               <View style={styles.checkboxContainer}>

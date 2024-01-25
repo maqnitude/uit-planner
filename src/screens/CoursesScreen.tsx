@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import 'react-native-get-random-values';
@@ -8,7 +8,7 @@ import moment from 'moment';
 import { Course } from '../types';
 import { getCoursesBySemester, removeCourse } from '../storage/CoursesStorage';
 import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
-import SearchBar from '../components/SearchBars';
+import SearchBar from '../components/SearchBar';
 
 interface CoursesScreenProps {
   navigation: any;
@@ -16,12 +16,11 @@ interface CoursesScreenProps {
 
 const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
   const [courses, setCourses] = useState<Course[]>([]);
+  const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
   const { currentSemesterId } = useCurrentSemester();
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const [selectedCourses, setSelectedCourses] = useState(null);
 
   const fetchCourses = React.useCallback(async () => {
     setIsLoading(true);
@@ -30,11 +29,13 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
     try {
       // get courses by semester id
       let currentSemesterCourses: Course[] | undefined;
+
       if (currentSemesterId) {
         currentSemesterCourses = await getCoursesBySemester(currentSemesterId);
       }
 
       setCourses(currentSemesterCourses ?? []);
+      setFilteredCourses(currentSemesterCourses ?? []);
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -47,6 +48,21 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
       fetchCourses();
     }, [fetchCourses])
   );
+
+  const handleSearch = (searchText: string) => {
+    if (searchText) {
+      searchText = searchText.trim().toLowerCase();
+      const filtered = courses.filter(course =>
+        course.name.toLowerCase().includes(searchText) ||
+        course.code.toLowerCase().includes(searchText) ||
+        course.location.toLowerCase().includes(searchText) ||
+        course.schedule[0].day.toLowerCase().includes(searchText)
+      );
+      setFilteredCourses(filtered);
+    } else {
+      setFilteredCourses(courses);
+    }
+  };
 
   const handleItemPress = (item: Course) => {
     navigation.navigate('Course Details', { item });
@@ -72,25 +88,17 @@ const CoursesScreen: React.FC<CoursesScreenProps> = ({ navigation }) => {
     );
   };
 
-  const handleSearch = (searchQuery, courses) => {
-    setSelectedCourses(courses.filter(course => course.name.includes(searchQuery.trim())));
-  };
-
-  useEffect(() => {
-    setSelectedCourses(courses);
-  }, [isLoading, error]);
-
   return (
     <View style={styles.container}>
       {isLoading && <Text>Loading courses...</Text>}
       {error && <Text style={styles.errorText}>Error loading courses: {error}</Text>}
       <SearchBar
-        onSearch={(searchQuery) => handleSearch(searchQuery,courses)}
+        onSearch={handleSearch}
       />
       {!isLoading && !error && (
         <FlatList
           contentContainerStyle={styles.listContent}
-          data={selectedCourses}
+          data={filteredCourses}
           renderItem={({ item }) => (
             <View style={styles.itemBlock}>
               <TouchableOpacity onPress={() => handleItemPress(item)}>

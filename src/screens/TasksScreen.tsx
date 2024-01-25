@@ -6,11 +6,12 @@ import 'react-native-get-random-values';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 
-import { Task } from '../types';
-import { getAllTasks, updateTask } from '../storage/TasksStorage';
+import { Course, Task } from '../types';
+import { getTasksBySemester, updateTask } from '../storage/TasksStorage';
 import { deleteTask } from '../utils/TaskManager';
 import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
-import { getAllCourses } from '../storage/CoursesStorage';
+import { getCoursesBySemester } from '../storage/CoursesStorage';
+import SearchBar from '../components/SearchBar';
 
 interface TasksScreenProps {
   navigation: any;
@@ -23,6 +24,7 @@ interface Section {
 
 const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
   const [sections, setSections] = useState<Section[]>([]);
+  const [filteredSections, setFilteredSections] = useState<Section[]>([]);
   const { currentSemesterId } = useCurrentSemester();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -33,19 +35,22 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
     setError(null);
 
     try {
-      // get tasks by semester id
-      const fetchedTasks = await getAllTasks();
-      const courses = await getAllCourses();
-      const currentSemesterCourses = courses?.filter(course => course.semesterId === currentSemesterId) ?? [];
-      const currentSemesterTasks = fetchedTasks?.filter(task => currentSemesterCourses.some(course => course.id === task.courseId)) ?? [];
+      let currentSemesterCourses: Course[] = [];
+      let fetchedTasks: Task[] = [];
+
+      if (currentSemesterId) {
+        currentSemesterCourses = await getCoursesBySemester(currentSemesterId) || [];
+        fetchedTasks = await getTasksBySemester(currentSemesterId) || [];
+      }
 
       // group tasks by course and sort within each course
       const groupedTasks = currentSemesterCourses.map(course => ({
         title: `${course.code} - ${course.name}`,
-        data: currentSemesterTasks.filter(task => task.courseId === course.id).sort((a, b) => Number(a.completed) - Number(b.completed)),
+        data: fetchedTasks.filter(task => task.courseId === course.id).sort((a, b) => Number(a.completed) - Number(b.completed)),
       }));
 
       setSections(groupedTasks);
+      setFilteredSections(groupedTasks);
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -58,6 +63,23 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
       fetchTasks();
     }, [fetchTasks])
   );
+
+  const handleSearch = (searchText: string) => {
+    if (searchText) {
+      searchText = searchText.trim().toLowerCase();
+      const filtered = sections.map(section => ({
+        ...section,
+        data: section.data.filter(task =>
+          task.name.toLowerCase().includes(searchText) ||
+          task.description.toLowerCase().includes(searchText) ||
+          task.type.toLowerCase().includes(searchText)
+        ),
+      }));
+      setFilteredSections(filtered);
+    } else {
+      setFilteredSections(sections);
+    }
+  };
 
   const handleItemPress = (item: Task) => {
     navigation.navigate('Task Details', { item });
@@ -100,11 +122,13 @@ const TasksScreen: React.FC<TasksScreenProps> = ({ navigation }) => {
     <View style={styles.container}>
       {isLoading && <Text>Loading tasks...</Text>}
       {error && <Text style={styles.errorText}>Error loading tasks: {error}</Text>}
-
+      <SearchBar
+        onSearch={handleSearch}
+      />
       {!isLoading && !error && (
         <SectionList
           contentContainerStyle={styles.listContent}
-          sections={sections}
+          sections={filteredSections}
           renderItem={({ item }) => (
             <View style={[styles.itemBlock, item.completed ? styles.completedTaskBlock : {}]}>
               <View style={styles.checkboxContainer}>
