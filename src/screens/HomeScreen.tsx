@@ -176,7 +176,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     const semesterEndDate = moment(currentSemester.end);
     const currentDate = moment();
     let semesterProgressPercent = currentDate.diff(semesterStartDate) / semesterEndDate.diff(semesterStartDate) * 100;
-    semesterProgressPercent = Math.min(semesterProgressPercent, 100);
+    semesterProgressPercent = Math.max(Math.min(semesterProgressPercent, 100), 0);
     return (
       <ScrollView style={styles.mainContainer} contentContainerStyle={styles.contentContainer}>
         {currentSemester ? (
