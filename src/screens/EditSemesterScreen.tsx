@@ -51,8 +51,9 @@ const EditSemesterScreen: React.FC<EditSemesterScreenProps> = ({ navigation, rou
             const existingSemesterStartTime = moment(SemesterDuration.start).format('MM:DD:YYYY');
             const existingSemesterEndTime = moment(SemesterDuration.end).format('MM:DD:YYYY');
 
-            if (((newSemesterStartTime >= existingSemesterStartTime && newSemesterStartTime < existingSemesterEndTime)
-                || (newSemesterEndTime > existingSemesterStartTime && newSemesterEndTime <= existingSemesterEndTime))) {
+            if ((newSemesterStartTime >= existingSemesterStartTime && newSemesterStartTime <= existingSemesterEndTime) ||
+            (newSemesterEndTime >= existingSemesterStartTime && newSemesterEndTime <= existingSemesterEndTime) ||
+            (newSemesterStartTime <= existingSemesterStartTime && newSemesterEndTime >= existingSemesterEndTime)) {
                 return true;
             }
         }
