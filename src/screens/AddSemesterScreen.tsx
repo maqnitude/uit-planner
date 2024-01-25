@@ -44,14 +44,14 @@ const AddSemesterScreen: React.FC<AddSemesterScreenProps> = ({ navigation }) => 
   const isSemesterOverlapped = (newSemester: Semester, existingSemesters: Semester[]): boolean => {
     for (let existingSemester of existingSemesters) {
       const SemesterDuration = existingSemester;
-      const newSemesterStartTime = moment(newSemester.start).format('MM:DD:YYYY');
-      const newSemesterEndTime = moment(newSemester.end).format('MM:DD:YYYY');
-      const existingSemesterStartTime = moment(SemesterDuration.start).format('MM:DD:YYYY');
-      const existingSemesterEndTime = moment(SemesterDuration.end).format('MM:DD:YYYY');
+      const newSemesterStartTime = moment(newSemester.start).format('MM-DD-YYYY').valueOf();
+      const newSemesterEndTime = moment(newSemester.end).format('MM-DD-YYYY').valueOf();
+      const existingSemesterStartTime = moment(SemesterDuration.start).format('MM-DD-YYYY').valueOf();
+      const existingSemesterEndTime = moment(SemesterDuration.end).format('MM-DD-YYYY').valueOf();
 
-      if ((newSemesterStartTime >= existingSemesterStartTime && newSemesterStartTime < existingSemesterEndTime) ||
-        (newSemesterEndTime > existingSemesterStartTime && newSemesterEndTime <= existingSemesterEndTime) ||
-        (newSemesterStartTime <= existingSemesterStartTime && newSemesterEndTime >= existingSemesterEndTime)) {
+      if ((newSemesterStartTime <= existingSemesterStartTime) && (existingSemesterEndTime <= newSemesterEndTime) ||
+        (newSemesterStartTime <= existingSemesterStartTime) && (existingSemesterStartTime <= newSemesterEndTime) ||
+        (newSemesterStartTime <= existingSemesterEndTime) && (existingSemesterEndTime <= newSemesterEndTime)){
         return true;
       }
     }
