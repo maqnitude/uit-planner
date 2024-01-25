@@ -6,7 +6,7 @@ export const generateSemesters = (num_semesters: number = 2): Semester[] => {
 
   for (let i = 0; i < num_semesters; i++) {
     const start = new Date(2024, i * 4, 1);
-    const end = new Date(2023, i * 4 + 4, 0);
+    const end = new Date(2024, i * 4 + 4, 0);
     const semester: Semester = {
       id: uuidv4(),
       name: `Semeter ${i}`,

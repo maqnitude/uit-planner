@@ -50,30 +50,38 @@ const SemesterDetailsScreen: React.FC<SemesterDetailsScreenProps> = ({ navigatio
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Semester: {semesterDetails.name}</Text>
-      <Text style={styles.detail}>Start: {moment(semesterDetails.start).format('DD-MM-YYYY')}</Text>
-      <Text style={styles.detail}>End: {moment(semesterDetails.end).format('DD-MM-YYYY')}</Text>
-      <View style={styles.coursesContainer}>
-        <ScrollView>
-          {courses?.map((course, index) => (
-            <TouchableOpacity key={index} style={styles.courseBlock} onPress={() => navigation.navigate('Course Details', { item: course })}>
-              <Text style={styles.boldText}>{course.name} ({course.code})</Text>
-              <Text>Location: {course.location}</Text>
-              <Text>Time: {course.schedule[0].day}, {moment(course.schedule[0].startTime).format('HH:mm:ss')}-{moment(course.schedule[0].endTime).format('HH:mm:ss')}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+    <ScrollView style={styles.scrollView} contentContainerStyle={styles.contentContainer}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Semester: {semesterDetails.name}</Text>
+        <Text style={styles.detail}>Start: {moment(semesterDetails.start).format('DD-MM-YYYY')}</Text>
+        <Text style={styles.detail}>End: {moment(semesterDetails.end).format('DD-MM-YYYY')}</Text>
+        <View style={styles.coursesContainer}>
+          <ScrollView>
+            {courses?.map((course, index) => (
+              <TouchableOpacity key={index} style={styles.courseBlock} onPress={() => navigation.navigate('Course Details', { item: course })}>
+                <Text style={styles.boldText}>{course.name} ({course.code})</Text>
+                <Text>Location: {course.location}</Text>
+                <Text>Time: {course.schedule[0].day}, {moment(course.schedule[0].startTime).format('HH:mm:ss')}-{moment(course.schedule[0].endTime).format('HH:mm:ss')}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button title="Edit" onPress={() => navigation.navigate('Edit Semester', { semester: semesterDetails })} />
+          <Button title="Delete" color="#d9534f" onPress={() => handleDeletePress(semesterDetails)} />
+        </View>
       </View>
-      <View style={styles.buttonContainer}>
-        <Button title="Edit" onPress={() => navigation.navigate('Edit Semester', { semester: semesterDetails })} />
-        <Button title="Delete" color="#d9534f" onPress={() => handleDeletePress(semesterDetails)} />
-      </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollView: {
+    flex: 1,
+  },
+  contentContainer: {
+    paddingBottom : 50,
+  },
   container: {
     flex: 1,
     padding: 20,
