@@ -16,8 +16,9 @@ interface TaskDetailsScreenProps {
 const TaskDetailsScreen: React.FC<TaskDetailsScreenProps> = ({ navigation, route }) => {
   const { item: task } = route.params;
   const [taskDetails, setTaskDetails] = useState(task);
-  const [text, setText] = useState(taskDetails.description)
-  const [savedMessage, setSavedMessage] = useState('');
+  const [description, setDescription] = useState(taskDetails.description);
+  const [isSaved, setIsSaved] = useState(true);
+
   useFocusEffect(
     React.useCallback(() => {
       const fetchUpdatedTask = async () => {
@@ -33,17 +34,19 @@ const TaskDetailsScreen: React.FC<TaskDetailsScreenProps> = ({ navigation, route
     await updateTask(updatedTask);
     setTaskDetails(updatedTask);
   };
-  const handleChangeDescription = async (item: Task, text: string) => {
-    const updatedTask = { ...item, description: text };
+
+  const handleDescriptionChange = (updatedDescription: string) => {
+    setDescription(updatedDescription);
+    setIsSaved(false);
+  };
+
+  const handleSave = async () => {
+    const updatedTask = { ...taskDetails, description };
     await updateTask(updatedTask);
     setTaskDetails(updatedTask);
-    setSavedMessage('Saved ');
+    setIsSaved(true);
   };
-  const handleInputChange = (text: string) => {
-    // Lưu giá trị input vào state
-    setText(text);
-    setSavedMessage('Unsaved !');
-  };
+
   const handleDeletePress = async (item: Task) => {
     Alert.alert(
       'Delete Task',
@@ -65,7 +68,7 @@ const TaskDetailsScreen: React.FC<TaskDetailsScreenProps> = ({ navigation, route
   };
 
   return (
-    <ScrollView style={{ flex: 1 }}>
+    <ScrollView style={styles.scrollView} contentContainerStyle={styles.contentContainer}>
       <View style={styles.container}>
         <View style={styles.titleContainer}>
           <CheckBox
@@ -78,44 +81,41 @@ const TaskDetailsScreen: React.FC<TaskDetailsScreenProps> = ({ navigation, route
         <Text style={styles.detail}>Type: {taskDetails.type}</Text>
         <Text style={styles.detail}>Due: {moment(taskDetails.dueDate).format('DD/MM/YYYY hh:mm:ss')}</Text>
         <Text style={styles.detail}>Description:</Text>
-
         <TextInput
           textAlignVertical="top"
           style={styles.textBox}
-          onChangeText={(inputText) => handleInputChange(inputText)}
-          value={text}
+          onChangeText={handleDescriptionChange}
+          value={description}
           multiline={true}
         />
         <View style={styles.messageContainer}>
-          {savedMessage == 'Saved ' ? (
-            <Text style={styles.savedMessage}>{savedMessage}</Text>
-          ) : (
-            savedMessage == 'Unsaved !' ? (
-              <Text style={styles.UnsavedMessage}>{savedMessage}</Text>
-            ) : (
-              <Text style={styles.savedMessage}> </Text>
-            )
-          )}
+          <Text style={isSaved ? styles.savedMessage : styles.unsavedMessage}>
+            {isSaved ? 'Saved' : 'Unsaved!'}
+          </Text>
         </View>
         <View style={styles.buttonContainer}>
           <View style={styles.buttonWrapper}>
             <Button title="Delete" color="#d9534f" onPress={() => handleDeletePress(taskDetails)} />
           </View>
           <View style={styles.buttonWrapper}>
-            <Button title="Save" onPress={() => handleChangeDescription(taskDetails, text)} />
+            <Button title="Save" onPress={handleSave} />
           </View>
         </View>
-
       </View>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollView: {
+    flex: 1,
+  },
+  contentContainer: {
+    paddingBottom: 50,
+  },
   container: {
     flex: 1,
     padding: 20,
-
   },
   titleContainer: {
     flexDirection: 'row',
@@ -140,14 +140,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     flexDirection: 'row',
-
-
   },
   buttonWrapper: {
-
     width: 100,
   },
-
   textBox: {
     margin: 5,
     borderWidth: 1,
@@ -156,21 +152,19 @@ const styles = StyleSheet.create({
     height: 200,
     width: '100%',
     borderRadius: 10,
-    fontSize: 17,
-    fontWeight: 'bold',
+    fontSize: 15,
   },
   messageContainer: {
     alignItems: 'center',
   },
   savedMessage: {
-
-    fontSize: 17,
-    color: 'green'
+    fontSize: 16,
+    color: 'green',
   },
-  UnsavedMessage: {
-    fontSize: 17,
+  unsavedMessage: {
+    fontSize: 16,
     color: 'red',
-  }
+  },
 });
 
 export default TaskDetailsScreen;

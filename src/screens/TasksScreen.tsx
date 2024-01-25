@@ -7,10 +7,10 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 
 import { Course, Task } from '../types';
-import { getAllTasks, getTasksBySemester, updateTask } from '../storage/TasksStorage';
+import { getTasksBySemester, updateTask } from '../storage/TasksStorage';
 import { deleteTask } from '../utils/TaskManager';
 import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
-import { getAllCourses, getCoursesBySemester } from '../storage/CoursesStorage';
+import { getCoursesBySemester } from '../storage/CoursesStorage';
 import SearchBar from '../components/SearchBar';
 
 interface TasksScreenProps {
