@@ -1,10 +1,16 @@
 import { Task } from '../types';
-import { storeTask, removeTask } from '../storage/TasksStorage';
+import { storeTask, removeTask, updateTask } from '../storage/TasksStorage';
 import { displayNotification, cancelNotificationById } from '../notification/NotificationService';
 import moment from 'moment';
 
 export async function createTask(task: Task) {
     await storeTask(task);
+    scheduleTaskNotification(task);
+}
+
+export async function editTask(task: Task) {
+    await cancelNotificationById(task.id);
+    await updateTask(task);
     scheduleTaskNotification(task);
 }
 

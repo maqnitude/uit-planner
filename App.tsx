@@ -17,6 +17,7 @@ import TimeTable from './src/screens/TimetableScreen';
 import DevMenuScreen from './src/screens/DevMenuScreen';
 import TasksScreen from './src/screens/TasksScreen';
 import AddTaskScreen from './src/screens/AddTaskScreen';
+import EditTaskScreen from './src/screens/EditTaskScreen';
 import BottomTabs from './src/components/BottomTabs';
 import TaskDetailsScreen from './src/screens/TaskDetailsScreen';
 import HomeScreen from './src/screens/HomeScreen';
@@ -69,6 +70,7 @@ export default function App() {
           <Stack.Screen name="Tasks" component={TasksScreen} />
           <Stack.Screen name="Add Task" component={AddTaskScreen} />
           <Stack.Screen name="Task Details" component={TaskDetailsScreen} />
+          <Stack.Screen name="Edit Task" component={EditTaskScreen} />
           {__DEV__ && (
             <Stack.Screen name="Dev Menu" component={DevMenuScreen} />
           )}

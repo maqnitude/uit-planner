@@ -62,7 +62,7 @@ const CourseDetailsScreen: React.FC<CourseDetailsScreenProps> = ({ navigation, r
             {tasks?.map((task, index) => (
               <TouchableOpacity key={index} style={styles.taskBlock} onPress={() => navigation.navigate('Task Details', { item: task })}>
                 <Text style={styles.boldText}>{task.name}</Text>
-                <Text>@{task.type}</Text>
+                <Text>#{task.type}</Text>
                 <Text>Due: {moment(task.dueDate).format('HH:mm:ss DD/MM/YYYY')}</Text>
               </TouchableOpacity>
             ))}
@@ -115,7 +115,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginBottom: 20,
-    height: '60%',
   },
   taskBlock: {
     marginVertical: 10,
