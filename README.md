@@ -1,79 +1,23 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# UIT Planner
+## Overview
+A university planner designed specifically for students at UIT.
+## Features
+- Manage semesters, courses, and tasks (assigments, dealines, etc.).
+   - Add, edit, and delete.
+   - Search and filter.
+- Timetable aligned with your actual timetable at UIT.
 
-# Getting Started
+We have lot more features in mind, but most of them involve knowing the web API of various UIT's websites, which are not available to us.
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+## Preview
+| Home | Semesters | Courses | Tasks | Timetable |
+| ---- | --------- | ------- | ----- | --------- |
+| ![image](https://github.com/maqnitude/uit-planner/assets/108073174/4fe902d6-40c4-4eef-97e4-ad3aaee222eb) | ![image](https://github.com/maqnitude/uit-planner/assets/108073174/44755968-c6a6-4d27-89d7-3aeb75f77e2d) | ![image](https://github.com/maqnitude/uit-planner/assets/108073174/eefd9972-7abe-48df-919b-52cb14862593) | ![image](https://github.com/maqnitude/uit-planner/assets/108073174/dcfb0fde-24c1-4a44-9c96-d107f54412dc) | ![image](https://github.com/maqnitude/uit-planner/assets/108073174/dabd3bc7-e28e-4690-8cf5-f686a39d445e) |
 
-## Step 1: Start the Metro Server
-
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
-
-To start Metro, run the following command from the _root_ of your React Native project:
-
-```bash
-# using npm
-npm start
-
-# OR using Yarn
-yarn start
-```
-
-## Step 2: Start your Application
-
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
-
-### For Android
-
-```bash
-# using npm
-npm run android
-
-# OR using Yarn
-yarn android
-```
-
-### For iOS
-
-```bash
-# using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
-
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
-
-## Step 3: Modifying your App
-
-Now that you have successfully run the app, let's modify it.
-
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
-
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+## Our team
+| Name | ID | Github |
+| ---- | -- | ------ |
+| Mai Anh Quân | 21520411 | https://github.com/maqnitude |
+| Trần Xuân Thành | 21520456 | https://github.com/LukasAbraham |
+| Nguyễn Chánh Nghĩa | 21520362 | https://github.com/nguyenchanhnghia2917 |
+| Đỗ Minh Khôi | 21521007 | https://github.com/Jun0se7en |
