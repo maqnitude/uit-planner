@@ -3,10 +3,10 @@ import { Alert, View, Text, StyleSheet, Button, ScrollView, TouchableOpacity } f
 import { useFocusEffect } from '@react-navigation/native';
 import moment from 'moment';
 
-import { getCourse, removeCourse } from '../storage/CoursesStorage';
-import { getTasksByCourse } from '../storage/TasksStorage';
-import { Task } from '../types';
-import { Course } from '../types';
+import { getCourse, removeCourse } from '../../storage/CoursesStorage';
+import { getTasksByCourse } from '../../storage/TasksStorage';
+import { Task } from '../../types';
+import { Course } from '../../types';
 
 interface CourseDetailsScreenProps {
   navigation: any;

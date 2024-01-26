@@ -5,10 +5,10 @@ import 'react-native-get-random-values';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 
-import { Course } from '../types';
-import { getCoursesBySemester, removeCourse } from '../storage/CoursesStorage';
-import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
-import SearchBar from '../components/SearchBar';
+import { Course } from '../../types';
+import { getCoursesBySemester, removeCourse } from '../../storage/CoursesStorage';
+import { useCurrentSemester } from '../../hooks/CurrentSemesterContext';
+import SearchBar from '../../components/SearchBar';
 
 interface CoursesScreenProps {
   navigation: any;

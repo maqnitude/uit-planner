@@ -4,10 +4,10 @@ import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
 
-import { Semester } from '../types';
-import FormTemplate from '../components/FormTemplate';
-import { getAllSemesters, storeSemester } from '../storage/SemestersStorage';
-import { DatePickerMode } from '../components/FormTemplate';
+import { Semester } from '../../types';
+import FormTemplate from '../../components/FormTemplate';
+import { getAllSemesters, storeSemester } from '../../storage/SemestersStorage';
+import { DatePickerMode } from '../../components/FormTemplate';
 
 interface AddSemesterScreenProps {
   navigation: any,
