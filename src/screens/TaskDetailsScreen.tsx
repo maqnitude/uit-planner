@@ -94,12 +94,11 @@ const TaskDetailsScreen: React.FC<TaskDetailsScreenProps> = ({ navigation, route
           </Text>
         </View>
         <View style={styles.buttonContainer}>
-          <View style={styles.buttonWrapper}>
+          <View style={styles.leftButtons}>
+            <Button title="Edit" onPress={() => navigation.navigate('Edit Task', { task: taskDetails })} />
             <Button title="Delete" color="#d9534f" onPress={() => handleDeletePress(taskDetails)} />
           </View>
-          <View style={styles.buttonWrapper}>
-            <Button title="Save" onPress={handleSave} />
-          </View>
+          <Button title="Save" onPress={handleSave} />
         </View>
       </View>
     </ScrollView>
@@ -141,8 +140,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flexDirection: 'row',
   },
-  buttonWrapper: {
-    width: 100,
+  leftButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: 120,
   },
   textBox: {
     margin: 5,

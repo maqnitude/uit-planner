@@ -1,25 +1,29 @@
 import React, { useState } from 'react';
 import { View, Alert } from 'react-native';
-import 'react-native-get-random-values';
-import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
 
 import { Task } from '../types';
 import FormTemplate from '../components/FormTemplate';
-import { createTask } from '../utils/TaskManager';
 import { DatePickerMode } from '../components/FormTemplate';
+import { editTask } from '../utils/TaskManager';
 
-interface AddTaskScreenProps {
+interface EditTaskScreenProps {
   route: any,
   navigation: any,
 }
 
-const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
-  const { course } = route.params;
-  const [name, setName] = useState('');
-  const [type, setType] = useState('');
-  const [dueDate, setDueDate] = useState(new Date());
-  const [description, setDescription] = useState('');
+const EditTaskScreen: React.FC<EditTaskScreenProps> = ({ route, navigation }) => {
+  const { task } = route.params;
+  const [name, setName] = useState(task.name);
+  const [type, setType] = useState(task.type);
+  const [dueDate, setDueDate] = useState(new Date(task.dueDate));
+  const [description, setDescription] = useState(task.description);
+
+  const resetState = () => {
+    setName('');
+    setType('');
+    setDescription('');
+  };
 
   const fields = [
     {
@@ -49,12 +53,6 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
     },
   ];
 
-  const resetState = () => {
-    setName('');
-    setType('');
-    setDescription('');
-  };
-
   const handleSubmit = async () => {
     if (!name || name.length > 100) {
       Alert.alert('Invalid input', 'Please enter a valid task title (1-100 characters).');
@@ -71,25 +69,22 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
       return;
     }
 
-    const newTask: Task = {
-      id: uuidv4(),
-      courseId: course.id,
+    const updatedTask: Task = {
+      ...task,
       name,
       type,
       dueDate,
       description,
-      completed: false,
     };
 
-    // await storeTask(newTask);
-    await createTask(newTask);
+    await editTask(updatedTask);
 
     resetState();
 
     setTimeout(() => {
       Alert.alert(
         'Success',
-        'Task was added successfully',
+        'Task was updated successfully',
         [
           { text: 'OK', onPress: () => navigation.goBack() },
         ]
@@ -104,4 +99,4 @@ const AddTaskScreen: React.FC<AddTaskScreenProps> = ({ route, navigation }) => {
   );
 };
 
-export default AddTaskScreen;
+export default EditTaskScreen;
