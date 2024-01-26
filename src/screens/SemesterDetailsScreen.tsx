@@ -53,6 +53,7 @@ const SemesterDetailsScreen: React.FC<SemesterDetailsScreenProps> = ({ navigatio
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.contentContainer}>
       <View style={styles.container}>
         <Text style={styles.title}>Semester: {semesterDetails.name}</Text>
+        <Text style={styles.detail}>Total credits: {courses?.reduce((sum, course) => sum + course.credits, 0)}</Text>
         <Text style={styles.detail}>Start: {moment(semesterDetails.start).format('DD-MM-YYYY')}</Text>
         <Text style={styles.detail}>End: {moment(semesterDetails.end).format('DD-MM-YYYY')}</Text>
         <View style={styles.coursesContainer}>
@@ -101,7 +102,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginBottom: 20,
-    height: '60%',
   },
   courseBlock: {
     marginVertical: 10,
