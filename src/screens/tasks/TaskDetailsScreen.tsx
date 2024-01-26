@@ -3,10 +3,10 @@ import { ScrollView, Alert, Button, View, Text, StyleSheet, TextInput } from 're
 import CheckBox from '@react-native-community/checkbox';
 import { useFocusEffect } from '@react-navigation/native';
 
-import { getTask, updateTask } from '../storage/TasksStorage';
-import { deleteTask } from '../utils/TaskManager';
+import { getTask, updateTask } from '../../storage/TasksStorage';
+import { deleteTask } from '../../utils/TaskManager';
 import moment from 'moment';
-import { Task } from '../types';
+import { Task } from '../../types';
 
 interface TaskDetailsScreenProps {
   navigation: any;

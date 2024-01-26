@@ -5,11 +5,11 @@ import { useFocusEffect } from '@react-navigation/native';
 import 'react-native-get-random-values';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { Semester } from '../types';
-import { getAllSemesters, removeSemester } from '../storage/SemestersStorage';
-import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
+import { Semester } from '../../types';
+import { getAllSemesters, removeSemester } from '../../storage/SemestersStorage';
+import { useCurrentSemester } from '../../hooks/CurrentSemesterContext';
 import moment from 'moment';
-import SearchBar from '../components/SearchBar';
+import SearchBar from '../../components/SearchBar';
 
 interface SemesterScreenProps {
   navigation: any;

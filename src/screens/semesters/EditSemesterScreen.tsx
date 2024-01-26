@@ -3,10 +3,10 @@ import { View, Alert } from 'react-native';
 import 'react-native-get-random-values';
 import moment from 'moment';
 
-import { Semester } from '../types';
-import FormTemplate from '../components/FormTemplate';
-import { getAllSemesters, updateSemester } from '../storage/SemestersStorage';
-import { DatePickerMode } from '../components/FormTemplate';
+import { Semester } from '../../types';
+import FormTemplate from '../../components/FormTemplate';
+import { getAllSemesters, updateSemester } from '../../storage/SemestersStorage';
+import { DatePickerMode } from '../../components/FormTemplate';
 
 interface EditSemesterScreenProps {
   navigation: any,
