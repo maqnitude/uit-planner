@@ -31,18 +31,19 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   courseName: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '700',
+    color: '#1e90ff',
   },
   courseCode: {
-    fontSize: 13,
-    fontWeight: '300',
+    fontSize: 12,
+    fontWeight: '500',
   },
   courseLocation: {
-    fontSize: 13,
+    fontSize: 11,
   },
   courseTime: {
-    fontSize: 13,
+    fontSize: 11,
   },
 });
 
