@@ -204,7 +204,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       <ScrollView style={styles.mainContainer} contentContainerStyle={styles.contentContainer}>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Welcome to your planner!</Text>
-          <Button title="Set up a new semester now" onPress={() => navigation.navigate('Semesters')} />
+          <Button title="Set up a semester now" onPress={() => navigation.navigate('Semesters')} />
         </View>
       </ScrollView>
     );
