@@ -94,7 +94,6 @@ const TimeTable = () => {
     const startOfWeek = now.clone().startOf('isoWeek');
     const endOfWeek = now.clone().endOf('isoWeek');
     const momentDate = moment(date);
-    console.log(startOfWeek.format('DD:MM:YYYY'), endOfWeek.format('DD:MM:YYYY'));
     return momentDate.isBetween(startOfWeek, endOfWeek, undefined, '[]');
   };
 
@@ -148,9 +147,7 @@ const TimeTable = () => {
                       </View>;
                     })}
                     {tasks.map((task, taskIndex) => {
-                      console.log(isThisWeek(task.dueDate));
                       if (isThisWeek(task.dueDate) && moment(task.dueDate).format('dddd') === day) {
-                        console.log(task.name);
                         return (
                           <View key={taskIndex} style={{ width: (screenWidth - timeStampWidth) / (screenWidth > 600 ? 6 : 3) }}>
                             <TaskBlock key={taskIndex} task={task} color={DAY_COLORS[day]} />
