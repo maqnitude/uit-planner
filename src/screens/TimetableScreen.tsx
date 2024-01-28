@@ -10,7 +10,7 @@ import { getCoursesBySemester } from '../storage/CoursesStorage';
 import { getTasksBySemester } from '../storage/TasksStorage';
 import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
 
-const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const TIME_STAMPS = ['7:30', '8:15', '9:00', '10:00', '10:45', '11:30', '13:00', '13:45', '14:30', '15:30', '16:15', '17:00'];
 const DAY_COLORS = {
   'Monday': '#CBE4F9',
@@ -19,6 +19,7 @@ const DAY_COLORS = {
   'Thursday': '#F9EBDF',
   'Friday': '#F9D8D6',
   'Saturday': '#D6CDEA',
+  'Sunday': '#F6CDEA',
 };
 const TIMES = TIME_STAMPS.map(time => moment(time, 'HH:mm'));
 
@@ -127,7 +128,7 @@ const TimeTable = () => {
             <ScrollView horizontal>
               <View style={styles.row}>
                 {DAYS.map((day, dayIndex) => (
-                  <View key={dayIndex} style={{ width: (screenWidth - timeStampWidth) / (screenWidth > 600 ? 6 : 3) }}>
+                  <View key={dayIndex} style={{ width: (screenWidth - timeStampWidth) / (screenWidth > 600 ? 7 : 3) }}>
                     <Text style={[styles.header, styles.boldText, { height: headerHeight }]}>{day}</Text>
                     {TIMES.map((time, timeIndex) => {
                       return <View key={timeIndex} style={[styles.timeSlot, { height: heights[timeIndex] }]}>

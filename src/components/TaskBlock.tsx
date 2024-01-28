@@ -14,7 +14,7 @@ const TaskBlock: React.FC<TaskBlockProps> = ({ task, color = '#e3e3e3' }) => {
   const navigation = useNavigation();
   return (
     <TouchableOpacity style={[styles.block, { backgroundColor: color }]} onPress={() => navigation.navigate('Task Details', { item: task })}>
-      <Text style={styles.taskName}>{task.name}</Text>
+      <Text style={styles.taskName}>{task.completed ? "[DONE] " : ""}{task.name}</Text>
       <Text style={styles.taskDue}>{moment(task.dueDate).format('HH:mm')}</Text>
     </TouchableOpacity>
   );
