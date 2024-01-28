@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
 
 import { Course } from '../types';
@@ -12,13 +13,14 @@ type CourseBlockProps = {
 }
 
 const CourseBlock: React.FC<CourseBlockProps> = ({ course, color = '#e3e3e3', height = 90, offset = 0 }) => {
+  const navigation = useNavigation();
   return (
-    <View style={[styles.block, {backgroundColor: color, height: height, marginTop: offset}]}>
+    <TouchableOpacity style={[styles.block, { backgroundColor: color, height: height, marginTop: offset }]} onPress={() => navigation.navigate('Course Details', { item: course })}>
       <Text style={styles.courseName}>{course.name}</Text>
       <Text style={styles.courseCode}>{course.code}</Text>
       <Text style={styles.courseLocation}>Loc: {course.location}</Text>
       <Text style={styles.courseTime}>{moment(course.schedule[0].startTime).format('HH:mm')} - {moment(course.schedule[0].endTime).format('HH:mm')}</Text>
-    </View>
+    </TouchableOpacity>
   );
 };
 
