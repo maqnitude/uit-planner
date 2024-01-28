@@ -3,9 +3,9 @@ import { Alert, View, Text, StyleSheet, Button, ScrollView, TouchableOpacity } f
 import { useFocusEffect } from '@react-navigation/native';
 import moment from 'moment';
 
-import { getSemester, removeSemester } from '../storage/SemestersStorage';
-import { getCoursesBySemester } from '../storage/CoursesStorage';
-import { Semester, Course } from '../types';
+import { getSemester, removeSemester } from '../../storage/SemestersStorage';
+import { getCoursesBySemester } from '../../storage/CoursesStorage';
+import { Semester, Course } from '../../types';
 
 interface SemesterDetailsScreenProps {
   navigation: any;

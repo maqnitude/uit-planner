@@ -4,12 +4,12 @@ import { createBottomTabNavigator, BottomTabNavigationOptions } from '@react-nav
 import MCIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FAIcon from 'react-native-vector-icons/FontAwesome5';
 
-import CoursesScreen from '../screens/CoursesScreen';
+import CoursesScreen from '../screens/courses/CoursesScreen';
 import TimeTable from '../screens/TimetableScreen';
-import TasksScreen from '../screens/TasksScreen';
+import TasksScreen from '../screens/tasks/TasksScreen';
 import DevMenuScreen from '../screens/DevMenuScreen';
 import HomeScreen from '../screens/HomeScreen';
-import SemesterScreen from '../screens/SemestersScreen';
+import SemesterScreen from '../screens/semesters/SemestersScreen';
 
 const Tab = createBottomTabNavigator();
 

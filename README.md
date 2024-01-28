@@ -6,6 +6,7 @@ A university planner designed specifically for students at UIT.
    - Add, edit, and delete.
    - Search and filter.
 - Timetable aligned with your actual timetable at UIT.
+- Notification for tasks.
 
 We have lot more features in mind, but most of them involve knowing the web API of various UIT's websites, which are not available to us.
 

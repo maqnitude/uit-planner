@@ -6,12 +6,12 @@ import 'react-native-get-random-values';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import moment from 'moment';
 
-import { Course, Task } from '../types';
-import { getTasksBySemester, updateTask } from '../storage/TasksStorage';
-import { deleteTask } from '../utils/TaskManager';
-import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
-import { getCoursesBySemester } from '../storage/CoursesStorage';
-import SearchBar from '../components/SearchBar';
+import { Course, Task } from '../../types';
+import { getTasksBySemester, updateTask } from '../../storage/TasksStorage';
+import { deleteTask } from '../../utils/TaskManager';
+import { useCurrentSemester } from '../../hooks/CurrentSemesterContext';
+import { getCoursesBySemester } from '../../storage/CoursesStorage';
+import SearchBar from '../../components/SearchBar';
 
 interface TasksScreenProps {
   navigation: any;

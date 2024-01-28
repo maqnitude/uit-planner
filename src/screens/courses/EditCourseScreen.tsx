@@ -1,30 +1,28 @@
 import React, { useState } from 'react';
 import { View, Alert } from 'react-native';
 import 'react-native-get-random-values';
-import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
 
-import { ClassPeriod, Course } from '../types';
-import FormTemplate from '../components/FormTemplate';
-import { getAllCourses, storeCourse } from '../storage/CoursesStorage';
-import { DatePickerMode } from '../components/FormTemplate';
-import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
+import { ClassPeriod, Course } from '../../types';
+import { getAllCourses, updateCourse } from '../../storage/CoursesStorage';
+import FormTemplate from '../../components/FormTemplate';
+import { DatePickerMode } from '../../components/FormTemplate';
 
-interface AddCourseScreenProps {
+interface EditCourseScreenProps {
+  route: any,
   navigation: any,
 }
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-const AddCourseScreen: React.FC<AddCourseScreenProps> = ({ navigation }) => {
-  const { currentSemesterId } = useCurrentSemester();
-
-  const [name, setName] = useState('');
-  const [code, setCode] = useState('');
-  const [credits, setCredits] = useState('');
-  const [location, setLocation] = useState('');
-  const [day, setDay] = useState('Monday');
-  const [startTime, setStartTime] = useState(new Date());
-  const [endTime, setEndTime] = useState(new Date());
+const EditCourseScreen: React.FC<EditCourseScreenProps> = ({ route, navigation }) => {
+  const { course } = route.params;
+  const [name, setName] = useState(course.name);
+  const [code, setCode] = useState(course.code);
+  const [credits, setCredits] = useState(course.credits.toString());
+  const [location, setLocation] = useState(course.location);
+  const [day, setDay] = useState(course.schedule[0].day);
+  const [startTime, setStartTime] = useState(new Date(course.schedule[0].startTime));
+  const [endTime, setEndTime] = useState(new Date(course.schedule[0].endTime));
 
   const fields = [
     {
@@ -75,19 +73,22 @@ const AddCourseScreen: React.FC<AddCourseScreenProps> = ({ navigation }) => {
     },
   ];
 
-  const isCourseOverlapped = (newCourse: Course, existingCourses: Course[]): boolean => {
+  const isCourseOverlapped = (updatedCourse: Course, existingCourses: Course[]): boolean => {
     for (let existingCourse of existingCourses) {
-      const courseDuration = existingCourse.schedule[0];
-      const newCourseStartTime = moment(newCourse.schedule[0].startTime).format('HH:mm');
-      const newCourseEndTime = moment(newCourse.schedule[0].endTime).format('HH:mm');
-      const existingCourseStartTime = moment(courseDuration.startTime).format('HH:mm');
-      const existingCourseEndTime = moment(courseDuration.endTime).format('HH:mm');
+      if (existingCourse.id !== updatedCourse.id) {
+        const courseDuration = existingCourse.schedule[0];
+        const newCourseStartTime = moment(updatedCourse.schedule[0].startTime).format('HH:mm');
+        const newCourseEndTime = moment(updatedCourse.schedule[0].endTime).format('HH:mm');
+        const existingCourseStartTime = moment(courseDuration.startTime).format('HH:mm');
+        const existingCourseEndTime = moment(courseDuration.endTime).format('HH:mm');
 
-      if (courseDuration.day === newCourse.schedule[0].day
-        && ((newCourseStartTime >= existingCourseStartTime && newCourseStartTime < existingCourseEndTime)
-          || (newCourseEndTime > existingCourseStartTime && newCourseEndTime <= existingCourseEndTime)
-          || (newCourseStartTime <= existingCourseStartTime && newCourseEndTime >= existingCourseEndTime))) {
-        return true;
+        if (courseDuration.day === updatedCourse.schedule[0].day
+          && ((newCourseStartTime >= existingCourseStartTime && newCourseStartTime < existingCourseEndTime)
+            || (newCourseEndTime > existingCourseStartTime && newCourseEndTime <= existingCourseEndTime)
+            || (newCourseStartTime <= existingCourseStartTime && newCourseEndTime >= existingCourseEndTime)
+          )) {
+          return true;
+        }
       }
     }
     return false;
@@ -142,36 +143,30 @@ const AddCourseScreen: React.FC<AddCourseScreenProps> = ({ navigation }) => {
       return;
     }
 
-    if (currentSemesterId === null) {
-      Alert.alert('No semester selected', 'Please select a semester before adding a course.');
-      return;
-    }
-
-    const newCourse: Course = {
-      id: uuidv4(),
+    const updatedCourse: Course = {
+      ...course,
       name,
       code,
       credits: parseInt(credits, 10),
       location,
-      semesterId: currentSemesterId,
       schedule: [{ day, startTime, endTime } as ClassPeriod],
     };
 
     // get courses by semester id
     const courses = await getAllCourses() || [];
-    const currentSemesterCourses = courses.filter(course => course.semesterId === currentSemesterId);
-    if (isCourseOverlapped(newCourse, currentSemesterCourses)) {
+    const currentSemesterCourses = courses.filter(c => c.semesterId === course.semesterId);
+    if (isCourseOverlapped(updatedCourse, currentSemesterCourses)) {
       Alert.alert('Invalid input', 'This course overlaps with another course in the current semester.');
       return;
     }
 
-    await storeCourse(newCourse);
+    await updateCourse(updatedCourse);
 
     resetState();
 
     Alert.alert(
       'Success',
-      'Course was added successfully',
+      'Course was updated successfully',
       [
         { text: 'OK', onPress: () => navigation.goBack() },
       ]
@@ -185,4 +180,4 @@ const AddCourseScreen: React.FC<AddCourseScreenProps> = ({ navigation }) => {
   );
 };
 
-export default AddCourseScreen;
+export default EditCourseScreen;
