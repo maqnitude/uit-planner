@@ -4,8 +4,10 @@ import moment from 'moment';
 import { useFocusEffect } from '@react-navigation/native';
 
 import CourseBlock from '../components/CourseBlock';
-import { Course } from '../types';
-import { getAllCourses } from '../storage/CoursesStorage';
+import TaskBlock from '../components/TaskBlock';
+import { Course, Task } from '../types';
+import { getCoursesBySemester } from '../storage/CoursesStorage';
+import { getTasksBySemester } from '../storage/TasksStorage';
 import { useCurrentSemester } from '../hooks/CurrentSemesterContext';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -22,6 +24,7 @@ const TIMES = TIME_STAMPS.map(time => moment(time, 'HH:mm'));
 
 const TimeTable = () => {
   const [courses, setCourses] = useState<Course[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const { currentSemesterId } = useCurrentSemester();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -34,11 +37,32 @@ const TimeTable = () => {
     setError(null);
 
     try {
-      // get courses by semester id
-      const fetchedCourses = await getAllCourses();
-      const currentCourses = fetchedCourses?.filter(course => course.semesterId === currentSemesterId) ?? [];
+      let fetchedCourses: Course[] | undefined;
 
-      setCourses(currentCourses);
+      if (currentSemesterId) {
+        fetchedCourses = await getCoursesBySemester(currentSemesterId);
+      }
+
+      setCourses(fetchedCourses ?? []);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentSemesterId]);
+
+  const fetchTasks = React.useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      let fetchedTasks: Task[] | undefined;
+
+      if (currentSemesterId) {
+        fetchedTasks = await getTasksBySemester(currentSemesterId);
+      }
+
+      setTasks(fetchedTasks ?? []);
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -49,7 +73,8 @@ const TimeTable = () => {
   useFocusEffect(
     React.useCallback(() => {
       fetchCourses();
-    }, [fetchCourses])
+      fetchTasks();
+    }, [fetchCourses, fetchTasks])
   );
 
   useEffect(() => {
@@ -63,6 +88,14 @@ const TimeTable = () => {
       subscription?.remove();
     };
   }, []);
+
+  const isThisWeek = (date: Date) => {
+    const now = moment();
+    const startOfWeek = now.clone().startOf('isoWeek');
+    const endOfWeek = now.clone().endOf('isoWeek');
+    const momentDate = moment(date);
+    return momentDate.isBetween(startOfWeek, endOfWeek, undefined, '[]');
+  };
 
   const timeStampWidth = 50;
   const headerHeight = 30;
@@ -86,7 +119,7 @@ const TimeTable = () => {
           <View style={styles.row}>
             <View style={{ marginBottom: unitHeight, marginTop: headerHeight }}>
               {TIME_STAMPS.map((time, index) => (
-                <View key={index} style={[styles.timeStamp, {width: timeStampWidth, height: heights[index], borderTopWidth: index === 0 ? 0.5 : 0}]}>
+                <View key={index} style={[styles.timeStamp, { width: timeStampWidth, height: heights[index], borderTopWidth: index === 0 ? 0.5 : 0 }]}>
                   <Text style={styles.boldText}>{time}</Text>
                 </View>
               ))}
@@ -95,9 +128,9 @@ const TimeTable = () => {
               <View style={styles.row}>
                 {DAYS.map((day, dayIndex) => (
                   <View key={dayIndex} style={{ width: (screenWidth - timeStampWidth) / (screenWidth > 600 ? 6 : 3) }}>
-                    <Text style={[styles.header, styles.boldText, {height: headerHeight}]}>{day}</Text>
+                    <Text style={[styles.header, styles.boldText, { height: headerHeight }]}>{day}</Text>
                     {TIMES.map((time, timeIndex) => {
-                      return <View key={timeIndex} style={[styles.timeSlot, {height: heights[timeIndex]}]}>
+                      return <View key={timeIndex} style={[styles.timeSlot, { height: heights[timeIndex] }]}>
                         {courses.map((course, courseIndex) => {
                           const courseStartTime = moment(course.schedule[0].startTime).format('HH:mm');
                           const courseEndTime = moment(course.schedule[0].endTime).format('HH:mm');
@@ -113,6 +146,17 @@ const TimeTable = () => {
                         })}
                       </View>;
                     })}
+                    {tasks.map((task, taskIndex) => {
+                      if (isThisWeek(task.dueDate) && moment(task.dueDate).format('dddd') === day) {
+                        return (
+                          <View key={taskIndex} style={{ width: (screenWidth - timeStampWidth) / (screenWidth > 600 ? 6 : 3) }}>
+                            <TaskBlock key={taskIndex} task={task} color={DAY_COLORS[day]} />
+                          </View>
+                        );
+                    }
+                    return null;
+                    })
+                    }
                   </View>
                 ))}
               </View>
